@@ -27,7 +27,11 @@ export interface Company {
   size: string
   website: string
   phone: string
+  email: string
   address: string
+  location: string
+  employeeCount: number
+  revenue: string
   logo?: string
   contactsCount: number
   dealsCount: number
@@ -50,6 +54,7 @@ export interface Deal {
   closeDate: string
   createdAt: string
   notes?: string
+  tags?: string[]
 }
 
 export interface Activity {
@@ -184,7 +189,11 @@ export const mockCompanies: Company[] = [
     size: '50-200',
     website: 'https://techsolutions.fr',
     phone: '+33 1 23 45 67 89',
+    email: 'contact@techsolutions.fr',
     address: '123 Avenue des Champs-Élysées, 75008 Paris',
+    location: 'Paris, France',
+    employeeCount: 125,
+    revenue: '15M €',
     contactsCount: 8,
     dealsCount: 3,
     totalValue: 125000,
@@ -198,7 +207,11 @@ export const mockCompanies: Company[] = [
     size: '10-50',
     website: 'https://startupgrowth.io',
     phone: '+33 1 34 56 78 90',
+    email: 'hello@startupgrowth.io',
     address: '45 Rue de Rivoli, 75001 Paris',
+    location: 'Paris, France',
+    employeeCount: 28,
+    revenue: '3M €',
     contactsCount: 5,
     dealsCount: 2,
     totalValue: 78000,
@@ -212,7 +225,11 @@ export const mockCompanies: Company[] = [
     size: '200-500',
     website: 'https://innovcorp.com',
     phone: '+33 1 45 67 89 01',
+    email: 'contact@innovcorp.com',
     address: '78 Boulevard Haussmann, 75009 Paris',
+    location: 'Paris, France',
+    employeeCount: 350,
+    revenue: '45M €',
     contactsCount: 12,
     dealsCount: 5,
     totalValue: 234000,
@@ -226,7 +243,11 @@ export const mockCompanies: Company[] = [
     size: '10-50',
     website: 'https://digitalpro.fr',
     phone: '+33 1 56 78 90 12',
+    email: 'info@digitalpro.fr',
     address: '12 Rue du Faubourg Saint-Honoré, 75008 Paris',
+    location: 'Paris, France',
+    employeeCount: 32,
+    revenue: '4M €',
     contactsCount: 3,
     dealsCount: 1,
     totalValue: 45000,
@@ -240,7 +261,11 @@ export const mockCompanies: Company[] = [
     size: '100-200',
     website: 'https://cloudservices.com',
     phone: '+33 1 67 89 01 23',
+    email: 'contact@cloudservices.com',
     address: '34 Avenue Montaigne, 75008 Paris',
+    location: 'Paris, France',
+    employeeCount: 150,
+    revenue: '22M €',
     contactsCount: 7,
     dealsCount: 4,
     totalValue: 189000,
@@ -254,7 +279,11 @@ export const mockCompanies: Company[] = [
     size: '500+',
     website: 'https://salesforce.example',
     phone: '+33 1 78 90 12 34',
+    email: 'contact@salesforce.example',
     address: '56 Rue de la Paix, 75002 Paris',
+    location: 'Paris, France',
+    employeeCount: 750,
+    revenue: '120M €',
     contactsCount: 15,
     dealsCount: 6,
     totalValue: 456000,
