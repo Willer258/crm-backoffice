@@ -79,6 +79,16 @@ const config: Config = {
   				'3': 'oklch(var(--chart-3))',
   				'4': 'oklch(var(--chart-4))',
   				'5': 'oklch(var(--chart-5))'
+  			},
+  			// CRM-specific colors
+  			crm: {
+  				success: 'oklch(65% 0.18 145)', // Green for won deals
+  				warning: 'oklch(75% 0.15 85)', // Orange for at-risk
+  				danger: 'oklch(55% 0.20 25)', // Red for lost deals
+  				info: 'oklch(70% 0.15 240)', // Blue for in-progress
+  				purple: 'oklch(65% 0.18 300)', // Purple for calls
+  				teal: 'oklch(70% 0.15 180)', // Teal for emails
+  				pink: 'oklch(70% 0.18 350)', // Pink for meetings
   			}
   		},
   		borderRadius: {
