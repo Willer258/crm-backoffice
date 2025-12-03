@@ -21,15 +21,19 @@ import {
   User,
   HelpCircle,
   Zap,
-  ShoppingBag,
   Mail,
   Calendar,
   Folder,
   Archive,
-  Trash2,
   Star,
   Menu,
   X,
+  UserCircle,
+  Briefcase,
+  TrendingUp,
+  Phone,
+  Tags,
+  LayoutGrid,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -68,65 +72,77 @@ const menuGroups = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutDashboard,
-        badge: 'New',
       },
       {
         title: 'Analytics',
         href: '/dashboard/analytics',
         icon: BarChart3,
       },
-      {
-        title: 'Calendar',
-        href: '/dashboard/calendar',
-        icon: Calendar,
-        badge: 3,
-      },
     ],
   },
   {
-    title: 'Gestion',
+    title: 'CRM',
     items: [
       {
-        title: 'Users',
-        href: '/dashboard/users',
-        icon: Users,
-        badge: 12,
+        title: 'Contacts',
+        href: '/dashboard/contacts',
+        icon: UserCircle,
       },
       {
-        title: 'Organizations',
-        href: '/dashboard/organizations',
+        title: 'Entreprises',
+        href: '/dashboard/companies',
         icon: Building2,
       },
       {
-        title: 'Projects',
-        icon: Folder,
-        items: [
-          { title: 'All Projects', href: '/dashboard/projects', icon: Folder },
-          { title: 'Active', href: '/dashboard/projects/active', icon: Star },
-          { title: 'Archived', href: '/dashboard/projects/archived', icon: Archive },
-        ],
+        title: 'Deals',
+        href: '/dashboard/deals',
+        icon: TrendingUp,
+      },
+      {
+        title: 'Pipeline',
+        href: '/dashboard/pipeline',
+        icon: LayoutGrid,
+      },
+      {
+        title: 'Activités',
+        href: '/dashboard/activities',
+        icon: Phone,
+      },
+      {
+        title: 'Calendrier',
+        href: '/dashboard/calendar',
+        icon: Calendar,
       },
     ],
   },
   {
-    title: 'E-commerce',
+    title: 'Configuration',
     items: [
       {
-        title: 'Products',
-        href: '/dashboard/products',
-        icon: ShoppingBag,
+        title: 'Tags',
+        href: '/dashboard/tags',
+        icon: Tags,
       },
       {
-        title: 'Orders',
-        href: '/dashboard/orders',
-        icon: FileText,
-        badge: 5,
+        title: 'Pipelines',
+        href: '/dashboard/pipelines',
+        icon: Briefcase,
+      },
+      {
+        title: 'Équipe',
+        href: '/dashboard/users',
+        icon: Users,
       },
     ],
   },
   {
     title: 'Système',
     items: [
+      {
+        title: 'Organizations',
+        href: '/dashboard/organizations',
+        icon: Building2,
+      },
       {
         title: 'Billing',
         href: '/dashboard/billing',
@@ -258,10 +274,10 @@ export function Sidebar() {
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-              <Zap className="h-4 w-4 text-white" />
+              <TrendingUp className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              YourBrand
+              CRM Pro
             </span>
           </Link>
         )}

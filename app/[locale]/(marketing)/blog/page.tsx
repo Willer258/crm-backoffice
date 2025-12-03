@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Chatbot } from '@/components/chatbot/chatbot'
-import { Calendar, Clock, ArrowRight, Search, Tag } from 'lucide-react'
+import { Calendar, Clock, ArrowRight, Search, Sparkles, Star } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -27,90 +27,90 @@ const stagger = {
 const blogPosts = [
   {
     id: '1',
-    title: 'Les tendances du développement web en 2025',
-    excerpt: 'Découvrez les technologies et frameworks qui vont dominer le développement web cette année.',
-    category: 'Développement',
-    author: 'Thomas Dubois',
+    title: 'Comment augmenter votre taux de conversion de 50%',
+    excerpt: 'Découvrez les stratégies éprouvées pour transformer plus de prospects en clients fidèles grâce à un suivi commercial optimisé.',
+    category: 'Vente',
+    author: 'Marie Dubois',
     date: '2025-01-10',
-    readTime: '5 min',
-    image: '💻',
+    readTime: '8 min',
+    image: '📈',
     featured: true
   },
   {
     id: '2',
-    title: 'Comment optimiser votre site pour le SEO',
-    excerpt: 'Guide complet pour améliorer votre référencement naturel et attirer plus de visiteurs.',
-    category: 'SEO',
-    author: 'Marie Laurent',
+    title: 'Les meilleures pratiques CRM pour les PME en 2025',
+    excerpt: 'Guide complet pour tirer le meilleur parti de votre CRM et booster votre performance commerciale.',
+    category: 'CRM',
+    author: 'Thomas Lefebvre',
     date: '2025-01-08',
-    readTime: '8 min',
-    image: '🔍',
+    readTime: '10 min',
+    image: '🎯',
     featured: true
   },
   {
     id: '3',
-    title: 'Design UI/UX : Les erreurs à éviter',
-    excerpt: 'Les pièges courants en design d interface et comment les éviter pour créer de meilleures expériences.',
-    category: 'Design',
-    author: 'Sarah Cohen',
+    title: 'Automatisation commerciale : par où commencer ?',
+    excerpt: 'Les premières étapes pour automatiser vos processus de vente et gagner des heures chaque semaine.',
+    category: 'Automatisation',
+    author: 'Sophie Martin',
     date: '2025-01-05',
     readTime: '6 min',
-    image: '🎨',
-    featured: false
-  },
-  {
-    id: '4',
-    title: 'E-commerce : Augmenter vos conversions de 50%',
-    excerpt: 'Stratégies éprouvées pour transformer vos visiteurs en clients fidèles.',
-    category: 'E-commerce',
-    author: 'Alexandre Martin',
-    date: '2025-01-03',
-    readTime: '10 min',
-    image: '🛒',
-    featured: false
-  },
-  {
-    id: '5',
-    title: 'Next.js 15 : Nouveautés et améliorations',
-    excerpt: 'Tout ce que vous devez savoir sur la dernière version de Next.js et ses nouvelles fonctionnalités.',
-    category: 'Développement',
-    author: 'Thomas Dubois',
-    date: '2025-01-01',
-    readTime: '7 min',
     image: '⚡',
     featured: false
   },
   {
+    id: '4',
+    title: 'Pipeline commercial : 5 erreurs à éviter absolument',
+    excerpt: 'Les pièges courants qui plombent votre pipeline et comment les éviter pour maximiser vos ventes.',
+    category: 'Vente',
+    author: 'Alexandre Martin',
+    date: '2025-01-03',
+    readTime: '7 min',
+    image: '🚫',
+    featured: false
+  },
+  {
+    id: '5',
+    title: 'Email de relance : templates qui convertissent',
+    excerpt: 'Nos meilleurs modèles d\'emails de relance pour réengager vos prospects et conclure plus de ventes.',
+    category: 'Email',
+    author: 'Marie Dubois',
+    date: '2025-01-01',
+    readTime: '5 min',
+    image: '✉️',
+    featured: false
+  },
+  {
     id: '6',
-    title: 'Framer Motion : Animations fluides en React',
-    excerpt: 'Créez des animations impressionnantes avec Framer Motion pour vos applications React.',
-    category: 'Développement',
-    author: 'Thomas Dubois',
+    title: 'KPIs commerciaux : les indicateurs essentiels',
+    excerpt: 'Quels indicateurs suivre pour piloter efficacement votre équipe commerciale au quotidien.',
+    category: 'Analytics',
+    author: 'Thomas Lefebvre',
     date: '2024-12-28',
-    readTime: '12 min',
-    image: '✨',
+    readTime: '9 min',
+    image: '📊',
     featured: false
   },
   {
     id: '7',
-    title: 'Accessibilité web : Guide complet',
-    excerpt: 'Rendez votre site accessible à tous avec ces bonnes pratiques et outils essentiels.',
-    category: 'Design',
-    author: 'Sarah Cohen',
+    title: 'Scoring de leads : guide pratique',
+    excerpt: 'Comment mettre en place un système de scoring pour prioriser vos prospects les plus chauds.',
+    category: 'CRM',
+    author: 'Sophie Martin',
     date: '2024-12-25',
-    readTime: '9 min',
-    image: '♿',
+    readTime: '8 min',
+    image: '🔥',
     featured: false
   },
   {
     id: '8',
-    title: 'Sécurité web : Protéger vos applications',
-    excerpt: 'Les meilleures pratiques pour sécuriser vos applications web contre les attaques courantes.',
-    category: 'Sécurité',
+    title: 'Onboarding commercial : réussir les 90 premiers jours',
+    excerpt: 'Les clés pour intégrer efficacement un nouveau commercial et l\'amener rapidement à performer.',
+    category: 'Management',
     author: 'Alexandre Martin',
     date: '2024-12-20',
-    readTime: '11 min',
-    image: '🔒',
+    readTime: '12 min',
+    image: '🎓',
     featured: false
   }
 ]
@@ -119,7 +119,7 @@ export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
 
-  const categories = ['all', 'Développement', 'Design', 'E-commerce', 'SEO', 'Sécurité']
+  const categories = ['all', 'Vente', 'CRM', 'Automatisation', 'Email', 'Analytics', 'Management']
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -133,49 +133,62 @@ export default function BlogPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Hero Section */}
-      <section className="container py-20">
+      <section className="relative overflow-hidden py-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/10 to-background" />
         <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-          className="text-center mb-12"
-        >
-          <motion.div variants={fadeIn}>
-            <Badge className="mb-4">Blog</Badge>
-          </motion.div>
-          <motion.h1
-            variants={fadeIn}
-            className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
-          >
-            Actualités &{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Ressources
-            </span>
-          </motion.h1>
-          <motion.p
-            variants={fadeIn}
-            className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto"
-          >
-            Découvrez nos derniers articles, guides et conseils pour réussir votre transformation digitale
-          </motion.p>
-        </motion.div>
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 0.15, scale: 1 }}
+          transition={{ duration: 1.2 }}
+          className="absolute top-1/4 -left-1/4 h-[400px] w-[400px] rounded-full bg-primary/20 blur-3xl"
+        />
 
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto mb-12"
-        >
-          <div className="relative">
-            <Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher un article..."
-              className="pl-12 h-12"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </motion.div>
+        <div className="container relative">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="text-center mb-12"
+          >
+            <motion.div variants={fadeIn}>
+              <Badge className="mb-4 bg-accent text-accent-foreground border-0">
+                <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                Blog
+              </Badge>
+            </motion.div>
+            <motion.h1
+              variants={fadeIn}
+              className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
+            >
+              Actualités &{' '}
+              <span className="bg-gradient-to-r from-primary via-chart-2 to-primary bg-clip-text text-transparent">
+                Ressources
+              </span>
+            </motion.h1>
+            <motion.p
+              variants={fadeIn}
+              className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto"
+            >
+              Conseils pratiques, bonnes pratiques et stratégies pour booster votre performance commerciale
+            </motion.p>
+          </motion.div>
+
+          {/* Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div className="relative">
+              <Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" />
+              <Input
+                placeholder="Rechercher un article..."
+                className="pl-12 h-12 border-2 focus:border-primary"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Featured Posts */}
@@ -190,13 +203,13 @@ export default function BlogPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
+                <Card className="h-full hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 cursor-pointer group border-2 border-transparent hover:border-primary/20">
                   <CardHeader>
                     <div className="text-6xl mb-4">{post.image}</div>
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge>{post.category}</Badge>
-                      <Badge variant="outline" className="bg-yellow-100 dark:bg-yellow-900 border-yellow-500">
-                        ⭐ À la une
+                      <Badge className="bg-primary text-primary-foreground">{post.category}</Badge>
+                      <Badge variant="secondary" className="bg-accent text-accent-foreground">
+                        <Star className="h-3 w-3 mr-1" /> À la une
                       </Badge>
                     </div>
                     <CardTitle className="text-2xl group-hover:text-primary transition-colors">
@@ -210,15 +223,15 @@ export default function BlogPage() {
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
+                          <Calendar className="h-4 w-4 text-primary" />
                           {new Date(post.date).toLocaleDateString('fr-FR')}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
+                          <Clock className="h-4 w-4 text-primary" />
                           {post.readTime}
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform">
+                      <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform text-primary">
                         Lire <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
@@ -233,12 +246,13 @@ export default function BlogPage() {
       {/* All Posts */}
       <section className="container pb-20">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 lg:grid-cols-6 mb-12">
+          <TabsList className="flex flex-wrap justify-start gap-1 w-full md:w-auto mb-12 h-auto p-1">
             {categories.map((cat) => (
               <TabsTrigger
                 key={cat}
                 value={cat}
                 onClick={() => setSelectedCategory(cat)}
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 {cat === 'all' ? 'Tous' : cat}
               </TabsTrigger>
@@ -255,10 +269,10 @@ export default function BlogPage() {
             >
               {filteredPosts.map((post) => (
                 <motion.div key={post.id} variants={fadeIn}>
-                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
+                  <Card className="h-full hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 cursor-pointer group border-2 border-transparent hover:border-primary/20">
                     <CardHeader>
                       <div className="text-5xl mb-4">{post.image}</div>
-                      <Badge className="w-fit mb-2">{post.category}</Badge>
+                      <Badge className="w-fit mb-2 bg-primary/10 text-primary">{post.category}</Badge>
                       <CardTitle className="text-xl group-hover:text-primary transition-colors">
                         {post.title}
                       </CardTitle>
@@ -270,11 +284,11 @@ export default function BlogPage() {
                       <div className="space-y-3">
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
+                            <Calendar className="h-4 w-4 text-primary" />
                             {new Date(post.date).toLocaleDateString('fr-FR')}
                           </div>
                           <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
+                            <Clock className="h-4 w-4 text-primary" />
                             {post.readTime}
                           </div>
                         </div>
@@ -282,7 +296,7 @@ export default function BlogPage() {
                           <span className="text-sm text-muted-foreground">
                             Par {post.author}
                           </span>
-                          <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform">
+                          <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform text-primary">
                             Lire <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                         </div>
@@ -305,31 +319,35 @@ export default function BlogPage() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="border-t bg-gradient-to-r from-blue-600 to-purple-600 py-20 text-white">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="container text-center"
-        >
-          <motion.h2 variants={fadeIn} className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
-            Ne manquez aucun article
-          </motion.h2>
-          <motion.p variants={fadeIn} className="mb-8 text-xl opacity-90">
-            Inscrivez-vous à notre newsletter et recevez les derniers articles directement dans votre boîte mail
-          </motion.p>
-          <motion.div variants={fadeIn} className="flex gap-2 max-w-md mx-auto">
-            <Input
-              type="email"
-              placeholder="votre@email.com"
-              className="bg-white text-foreground"
-            />
-            <Button variant="secondary" size="lg">
-              S abonner
-            </Button>
+      <section className="py-20">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-chart-2 to-primary p-12 md:p-16 text-primary-foreground text-center shadow-2xl shadow-primary/25"
+          >
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIDAgNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
+            <div className="relative z-10">
+              <motion.h2 variants={fadeIn} className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
+                Ne manquez aucun article
+              </motion.h2>
+              <motion.p variants={fadeIn} className="mb-8 text-xl opacity-90 max-w-2xl mx-auto">
+                Inscrivez-vous à notre newsletter et recevez les derniers articles, conseils et bonnes pratiques directement dans votre boîte mail
+              </motion.p>
+              <motion.div variants={fadeIn} className="flex gap-2 max-w-md mx-auto">
+                <Input
+                  type="email"
+                  placeholder="votre@email.com"
+                  className="bg-primary-foreground text-foreground border-0"
+                />
+                <Button variant="secondary" size="lg" className="shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
+                  S'abonner
+                </Button>
+              </motion.div>
+            </div>
           </motion.div>
-        </motion.div>
+        </div>
       </section>
 
       <Chatbot />

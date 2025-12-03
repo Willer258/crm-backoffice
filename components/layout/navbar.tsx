@@ -1,6 +1,8 @@
-"use client"
+'use client'
 
+import * as React from 'react'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import {
@@ -10,291 +12,185 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
-import { Menu, ShoppingCart, Search, User } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { useState } from 'react'
-import { ThemeToggle } from './theme-toggle'
+import { Menu, TrendingUp } from 'lucide-react'
+import { ThemeToggle } from '../theme-toggle'
 import { LanguageSwitcher } from './language-switcher'
 import { ThemeCustomizer } from '@/components/theme/theme-customizer'
 
-export function Navbar() {
-  const [cartItems, setCartItems] = useState(3)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+const features = [
+  {
+    title: 'Gestion des contacts',
+    href: '/features#contacts',
+    description: 'Centralisez vos prospects et clients',
+  },
+  {
+    title: 'Pipeline visuel',
+    href: '/features#pipeline',
+    description: 'Kanban drag & drop pour vos deals',
+  },
+  {
+    title: "Suivi d'activités",
+    href: '/features#activities',
+    description: 'Ne ratez plus jamais une relance',
+  },
+  {
+    title: 'Analytics & rapports',
+    href: '/features#analytics',
+    description: 'Dashboards temps réel',
+  },
+]
 
-  const services = [
-    { title: 'Développement Web', href: '/services#web', description: 'Applications web modernes et performantes' },
-    { title: 'Design UI/UX', href: '/services#design', description: 'Interfaces utilisateur exceptionnelles' },
-    { title: 'E-commerce', href: '/services#ecommerce', description: 'Solutions de vente en ligne' },
-    { title: 'Consulting', href: '/services#consulting', description: 'Conseils stratégiques personnalisés' },
-  ]
+const resources = [
+  { title: 'FAQ', href: '/faq', description: 'Questions fréquentes' },
+  { title: 'Blog', href: '/blog', description: 'Conseils et actualités CRM' },
+  { title: 'Contact', href: '/contact', description: 'Nous sommes là pour vous aider' },
+  { title: 'Support', href: '/contact', description: 'Assistance technique' },
+]
 
+const ListItem = React.forwardRef<
+  React.ElementRef<'a'>,
+  React.ComponentPropsWithoutRef<'a'> & { title: string }
+>(({ className, title, children, href, ...props }, ref) => {
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-    >
+    <li>
+      <NavigationMenuLink asChild>
+        <Link
+          ref={ref}
+          href={href ?? '#'}
+          className={cn(
+            'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
+        </Link>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = 'ListItem'
+
+export function Navbar() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-          >
-            YourBrand
-          </motion.div>
+        <Link href="/" className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-primary via-chart-2 to-primary">
+            <TrendingUp className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="bg-gradient-to-r from-primary via-chart-2 to-primary bg-clip-text text-xl font-bold text-transparent">
+            CRM Pro
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                  Accueil
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <Link href="/">Accueil</Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/about" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                  Qui sommes-nous
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Nos Services</NavigationMenuTrigger>
+              <NavigationMenuTrigger>Fonctionnalités</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                  {services.map((service) => (
-                    <li key={service.title}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={service.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">{service.title}</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            {service.description}
-                          </p>
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
+                  {features.map((feature) => (
+                    <ListItem key={feature.title} title={feature.title} href={feature.href}>
+                      {feature.description}
+                    </ListItem>
                   ))}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
+              <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <Link href="/pricing">Tarifs</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
               <NavigationMenuTrigger>Ressources</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/portfolio"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">Portfolio</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Découvrez nos réalisations
-                        </p>
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/blog"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">Blog</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Actualités et ressources
-                        </p>
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/pricing"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">Tarifs</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Nos offres et prix
-                        </p>
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href="/faq"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">FAQ</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Questions fréquentes
-                        </p>
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
+                  {resources.map((resource) => (
+                    <ListItem key={resource.title} title={resource.title} href={resource.href}>
+                      {resource.description}
+                    </ListItem>
+                  ))}
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/shop" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                  Boutique
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <Link href="/contact" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                  Contact
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <Link href="/about">À propos</Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {/* Search */}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(!isSearchOpen)}>
-              <Search className="h-5 w-5" />
-            </Button>
-          </motion.div>
-
-          {/* Cart */}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItems > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    {cartItems}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
-          </motion.div>
-
           <LanguageSwitcher />
           <ThemeCustomizer />
           <ThemeToggle />
 
-          {/* Login/User Menu */}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button asChild variant="default" size="sm" className="hidden md:inline-flex">
-              <Link href="/login">Se connecter</Link>
-            </Button>
-          </motion.div>
+          <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+            <Link href="/login">Connexion</Link>
+          </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="md:hidden">
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                </Button>
-              </motion.div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link href="/login">Se connecter</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/register">S inscrire</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link href="/dashboard">Dashboard</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button asChild size="sm" className="hidden md:inline-flex">
+            <Link href="/register">Essai gratuit</Link>
+          </Button>
 
-          {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
+                <span className="sr-only">Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent>
-              <nav className="flex flex-col gap-4 mt-8">
-                <Link href="/" className="text-lg font-medium hover:text-primary transition-colors">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col gap-4 pt-8">
+                <Link href="/" className="text-lg font-medium transition-colors hover:text-primary">
                   Accueil
                 </Link>
-                <Link href="/about" className="text-lg font-medium hover:text-primary transition-colors">
-                  Qui sommes-nous
+                <Link href="/features" className="text-lg font-medium transition-colors hover:text-primary">
+                  Fonctionnalités
                 </Link>
-                <Link href="/services" className="text-lg font-medium hover:text-primary transition-colors">
-                  Nos Services
-                </Link>
-                <Link href="/portfolio" className="text-lg font-medium hover:text-primary transition-colors">
-                  Portfolio
-                </Link>
-                <Link href="/blog" className="text-lg font-medium hover:text-primary transition-colors">
-                  Blog
-                </Link>
-                <Link href="/pricing" className="text-lg font-medium hover:text-primary transition-colors">
+                <Link href="/pricing" className="text-lg font-medium transition-colors hover:text-primary">
                   Tarifs
                 </Link>
-                <Link href="/shop" className="text-lg font-medium hover:text-primary transition-colors">
-                  Boutique
+                <Link href="/about" className="text-lg font-medium transition-colors hover:text-primary">
+                  À propos
                 </Link>
-                <Link href="/faq" className="text-lg font-medium hover:text-primary transition-colors">
+                <Link href="/faq" className="text-lg font-medium transition-colors hover:text-primary">
                   FAQ
                 </Link>
-                <Link href="/contact" className="text-lg font-medium hover:text-primary transition-colors">
+                <Link href="/blog" className="text-lg font-medium transition-colors hover:text-primary">
+                  Blog
+                </Link>
+                <Link href="/contact" className="text-lg font-medium transition-colors hover:text-primary">
                   Contact
                 </Link>
+                <div className="mt-4 flex flex-col gap-2 border-t pt-4">
+                  <Button asChild variant="ghost" className="w-full justify-start">
+                    <Link href="/login">Connexion</Link>
+                  </Button>
+                  <Button asChild className="w-full">
+                    <Link href="/register">Essai gratuit 14 jours</Link>
+                  </Button>
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
         </div>
       </div>
-
-      {/* Search Bar */}
-      {isSearchOpen && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          className="border-t"
-        >
-          <div className="container py-4">
-            <Input
-              type="search"
-              placeholder="Rechercher des produits, services..."
-              className="w-full"
-              autoFocus
-            />
-          </div>
-        </motion.div>
-      )}
-    </motion.header>
+    </header>
   )
 }
