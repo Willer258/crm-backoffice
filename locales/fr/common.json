@@ -1,17 +1,21 @@
 {
   "app": {
-    "name": "Tableau de Bord SaaS",
-    "description": "Template moderne de tableau de bord SaaS"
+    "name": "CRM Pro",
+    "description": "La plateforme CRM qui transforme vos prospects en clients fidèles",
+    "tagline": "Gérez vos relations clients avec simplicité et efficacité"
   },
   "nav": {
     "home": "Accueil",
     "features": "Fonctionnalités",
     "pricing": "Tarifs",
+    "about": "À propos",
     "blog": "Blog",
     "contact": "Contact",
     "dashboard": "Tableau de bord",
     "signIn": "Se connecter",
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "startFreeTrial": "Démarrer l'essai gratuit",
+    "requestDemo": "Demander une démo"
   },
   "common": {
     "loading": "Chargement...",
@@ -24,6 +28,369 @@
     "create": "Créer",
     "search": "Rechercher",
     "filter": "Filtrer",
-    "actions": "Actions"
+    "actions": "Actions",
+    "learnMore": "En savoir plus",
+    "getStarted": "Commencer",
+    "viewAll": "Voir tout",
+    "perMonth": "/mois",
+    "perYear": "/an",
+    "perUser": "/utilisateur",
+    "free": "Gratuit",
+    "popular": "Populaire",
+    "recommended": "Recommandé",
+    "new": "Nouveau",
+    "comingSoon": "Bientôt disponible"
+  },
+  "hero": {
+    "title": "Transformez vos prospects en clients fidèles",
+    "subtitle": "La plateforme CRM tout-en-un qui simplifie votre gestion commerciale et booste vos ventes",
+    "cta": {
+      "primary": "Démarrer gratuitement",
+      "secondary": "Voir la démo"
+    },
+    "stats": {
+      "users": "+12 000 utilisateurs actifs",
+      "rating": "4.9/5 satisfaction client",
+      "support": "Support 24/7"
+    }
+  },
+  "features": {
+    "title": "Tout ce dont vous avez besoin pour réussir",
+    "subtitle": "Des outils puissants pour gérer l'ensemble de votre cycle de vente",
+    "pipeline": {
+      "title": "Pipeline visuel",
+      "description": "Visualisez et gérez vos opportunités avec un tableau Kanban intuitif"
+    },
+    "contacts": {
+      "title": "Gestion des contacts",
+      "description": "Centralisez toutes les informations de vos contacts et entreprises"
+    },
+    "automation": {
+      "title": "Automatisations",
+      "description": "Automatisez vos tâches répétitives et gagnez du temps"
+    },
+    "analytics": {
+      "title": "Tableaux de bord",
+      "description": "Analysez vos performances avec des rapports détaillés"
+    },
+    "email": {
+      "title": "Suivi des emails",
+      "description": "Suivez vos emails et recevez des alertes en temps réel"
+    },
+    "integrations": {
+      "title": "Intégrations",
+      "description": "Connectez vos outils favoris en quelques clics"
+    },
+    "security": {
+      "title": "Sécurité avancée",
+      "description": "Vos données sont protégées avec un chiffrement de niveau bancaire"
+    },
+    "mobile": {
+      "title": "Application mobile",
+      "description": "Accédez à votre CRM où que vous soyez"
+    }
+  },
+  "pricing": {
+    "title": "Des tarifs adaptés à vos besoins",
+    "subtitle": "Choisissez le plan qui correspond à votre entreprise",
+    "monthly": "Mensuel",
+    "annually": "Annuel",
+    "savePercent": "Économisez 20%",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "price": "29",
+        "description": "Idéal pour les indépendants et petites équipes",
+        "features": [
+          "Jusqu'à 3 utilisateurs",
+          "1 000 contacts",
+          "Pipeline de vente basique",
+          "Suivi des emails",
+          "Support par email"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "59",
+        "description": "Pour les équipes commerciales en croissance",
+        "features": [
+          "Jusqu'à 10 utilisateurs",
+          "10 000 contacts",
+          "Pipelines multiples",
+          "Automatisations",
+          "Intégrations avancées",
+          "Support prioritaire"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "price": "99",
+        "description": "Pour les entreprises établies",
+        "features": [
+          "Jusqu'à 50 utilisateurs",
+          "Contacts illimités",
+          "Tableaux de bord personnalisés",
+          "API complète",
+          "SSO & permissions avancées",
+          "Support dédié"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Sur devis",
+        "description": "Solutions sur mesure pour les grandes organisations",
+        "features": [
+          "Utilisateurs illimités",
+          "Déploiement on-premise",
+          "SLA garanti",
+          "Formation personnalisée",
+          "Account manager dédié"
+        ]
+      }
+    },
+    "cta": {
+      "start": "Commencer",
+      "contact": "Nous contacter",
+      "trial": "14 jours d'essai gratuit"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "questions": {
+        "trial": {
+          "question": "L'essai gratuit est-il vraiment sans engagement ?",
+          "answer": "Oui, vous pouvez tester notre CRM pendant 14 jours sans carte bancaire. À la fin de l'essai, vous choisissez de continuer ou non."
+        },
+        "upgrade": {
+          "question": "Puis-je changer de forfait à tout moment ?",
+          "answer": "Absolument. Vous pouvez passer à un forfait supérieur ou inférieur quand vous le souhaitez. La facturation sera ajustée au prorata."
+        },
+        "data": {
+          "question": "Que se passe-t-il avec mes données si j'arrête mon abonnement ?",
+          "answer": "Vos données restent accessibles pendant 30 jours après l'annulation. Vous pouvez les exporter à tout moment."
+        },
+        "support": {
+          "question": "Quel support est inclus ?",
+          "answer": "Tous les plans incluent un support par email. Les plans Pro et supérieurs bénéficient d'un support prioritaire avec des temps de réponse garantis."
+        }
+      }
+    }
+  },
+  "about": {
+    "title": "Notre mission",
+    "subtitle": "Aider les entreprises à construire des relations clients durables",
+    "story": {
+      "title": "Notre histoire",
+      "content": "Fondé en 2018, CRM Pro est né d'un constat simple : les outils CRM existants étaient trop complexes pour les PME. Notre équipe a créé une solution intuitive et puissante, adoptée aujourd'hui par plus de 12 000 entreprises."
+    },
+    "values": {
+      "title": "Nos valeurs",
+      "simplicity": {
+        "title": "Simplicité",
+        "description": "La technologie doit simplifier le travail, pas le compliquer"
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "Nous investissons constamment dans la R&D pour vous offrir les meilleurs outils"
+      },
+      "trust": {
+        "title": "Confiance",
+        "description": "La sécurité de vos données est notre priorité absolue"
+      },
+      "customer": {
+        "title": "Client d'abord",
+        "description": "Votre succès est notre succès"
+      }
+    },
+    "team": {
+      "title": "Notre équipe",
+      "subtitle": "Des experts passionnés par la relation client"
+    },
+    "stats": {
+      "users": "12 000+",
+      "usersLabel": "Utilisateurs actifs",
+      "countries": "15",
+      "countriesLabel": "Pays",
+      "employees": "60",
+      "employeesLabel": "Employés",
+      "satisfaction": "98%",
+      "satisfactionLabel": "Satisfaction client"
+    }
+  },
+  "contact": {
+    "title": "Parlons de votre projet",
+    "subtitle": "Notre équipe est là pour répondre à toutes vos questions",
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email professionnel",
+      "phone": "Téléphone",
+      "company": "Entreprise",
+      "jobTitle": "Fonction",
+      "teamSize": "Taille de l'équipe",
+      "message": "Votre message",
+      "reason": {
+        "label": "Motif de contact",
+        "demo": "Demande de démonstration",
+        "pricing": "Questions sur les tarifs",
+        "support": "Support technique",
+        "partnership": "Partenariat",
+        "other": "Autre"
+      },
+      "newsletter": "Je souhaite recevoir les actualités et conseils CRM",
+      "gdpr": "J'accepte la politique de confidentialité",
+      "submit": "Envoyer le message",
+      "success": "Message envoyé avec succès ! Nous vous répondrons sous 24h.",
+      "error": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "info": {
+      "email": "contact@crmpro.fr",
+      "phone": "+33 1 23 45 67 89",
+      "address": "12 rue de la Paix, 75002 Paris",
+      "hours": "Lun-Ven : 9h-18h"
+    },
+    "cta": {
+      "demo": "Réserver une démo",
+      "call": "Planifier un appel",
+      "chat": "Chat en direct"
+    }
+  },
+  "testimonials": {
+    "title": "Ils nous font confiance",
+    "subtitle": "Découvrez pourquoi plus de 12 000 entreprises ont choisi CRM Pro"
+  },
+  "cta": {
+    "title": "Prêt à transformer votre relation client ?",
+    "subtitle": "Rejoignez les milliers d'entreprises qui ont déjà fait le choix de la performance",
+    "primary": "Démarrer gratuitement",
+    "secondary": "Demander une démo",
+    "trial": "14 jours d'essai gratuit, sans carte bancaire"
+  },
+  "footer": {
+    "description": "La plateforme CRM qui transforme vos prospects en clients fidèles",
+    "product": {
+      "title": "Produit",
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "integrations": "Intégrations",
+      "changelog": "Nouveautés",
+      "roadmap": "Roadmap"
+    },
+    "resources": {
+      "title": "Ressources",
+      "blog": "Blog",
+      "guides": "Guides",
+      "academy": "Academy",
+      "webinars": "Webinaires",
+      "api": "Documentation API"
+    },
+    "company": {
+      "title": "Entreprise",
+      "about": "À propos",
+      "careers": "Carrières",
+      "press": "Presse",
+      "contact": "Contact",
+      "partners": "Partenaires"
+    },
+    "legal": {
+      "title": "Légal",
+      "privacy": "Confidentialité",
+      "terms": "CGU",
+      "cookies": "Cookies",
+      "security": "Sécurité",
+      "gdpr": "RGPD"
+    },
+    "copyright": "© 2024 CRM Pro. Tous droits réservés.",
+    "madeWith": "Fait avec ❤️ en France"
+  },
+  "sidebar": {
+    "general": "Général",
+    "management": "Gestion",
+    "system": "Système",
+    "dashboard": "Tableau de bord",
+    "analytics": "Analytique",
+    "calendar": "Calendrier",
+    "users": "Utilisateurs",
+    "organizations": "Entreprises",
+    "contacts": "Contacts",
+    "deals": "Opportunités",
+    "pipeline": "Pipeline",
+    "activities": "Activités",
+    "tasks": "Tâches",
+    "emails": "Emails",
+    "reports": "Rapports",
+    "projects": "Projets",
+    "allProjects": "Tous les projets",
+    "active": "Actifs",
+    "archived": "Archivés",
+    "billing": "Facturation",
+    "logs": "Journaux",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "support": "Support",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue",
+    "overview": "Vue d'ensemble",
+    "recentActivity": "Activité récente",
+    "upcomingTasks": "Tâches à venir",
+    "salesFunnel": "Entonnoir de vente",
+    "topDeals": "Meilleures opportunités",
+    "performance": "Performance",
+    "goals": "Objectifs",
+    "widgets": {
+      "revenue": "Chiffre d'affaires",
+      "deals": "Opportunités",
+      "contacts": "Nouveaux contacts",
+      "conversion": "Taux de conversion",
+      "tasks": "Tâches complétées",
+      "emails": "Emails envoyés"
+    }
+  },
+  "modules": {
+    "title": "Modules & Extensions",
+    "subtitle": "Personnalisez votre CRM avec nos modules",
+    "marketing": {
+      "title": "Marketing",
+      "description": "Campagnes email, landing pages, scoring"
+    },
+    "support": {
+      "title": "Support Client",
+      "description": "Ticketing, base de connaissances, chat"
+    },
+    "invoicing": {
+      "title": "Facturation",
+      "description": "Devis, factures, paiements"
+    },
+    "projects": {
+      "title": "Projets",
+      "description": "Gestion de projets, collaboration"
+    },
+    "documents": {
+      "title": "Documents",
+      "description": "Stockage, signatures électroniques"
+    },
+    "telephony": {
+      "title": "Téléphonie",
+      "description": "Appels intégrés, enregistrement"
+    },
+    "whatsapp": {
+      "title": "WhatsApp Business",
+      "description": "Messagerie intégrée"
+    },
+    "ai": {
+      "title": "Assistant IA",
+      "description": "Prédictions, recommandations"
+    }
+  },
+  "security": {
+    "title": "Sécurité & Conformité",
+    "subtitle": "Vos données sont entre de bonnes mains",
+    "gdpr": "Conforme RGPD",
+    "soc2": "Certifié SOC 2",
+    "encryption": "Chiffrement AES-256",
+    "backup": "Sauvegardes quotidiennes",
+    "uptime": "99.9% de disponibilité",
+    "iso": "ISO 27001"
   }
 }

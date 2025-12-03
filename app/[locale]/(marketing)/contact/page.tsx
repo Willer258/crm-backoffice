@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -9,54 +9,103 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 import { Chatbot } from '@/components/chatbot/chatbot'
-import { Mail, Phone, MapPin, Send, Clock, MessageCircle } from 'lucide-react'
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  Clock,
+  MessageCircle,
+  Users,
+  Building2,
+  Headphones,
+  Calendar,
+  ArrowRight,
+  Check,
+  PlayCircle,
+  Sparkles,
+  Star,
+} from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
+import Link from 'next/link'
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 }
 
 const stagger = {
   visible: {
     transition: {
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 }
+
+const contactReasons = [
+  { value: 'demo', label: 'Demander une démo personnalisée' },
+  { value: 'pricing', label: 'Question sur les tarifs' },
+  { value: 'technical', label: 'Question technique' },
+  { value: 'partnership', label: 'Partenariat / Intégration' },
+  { value: 'press', label: 'Presse / Médias' },
+  { value: 'careers', label: 'Rejoindre l\'équipe' },
+  { value: 'other', label: 'Autre demande' },
+]
+
+const teamSizes = [
+  { value: '1', label: '1 personne (indépendant)' },
+  { value: '2-5', label: '2-5 personnes' },
+  { value: '6-10', label: '6-10 personnes' },
+  { value: '11-25', label: '11-25 personnes' },
+  { value: '26-50', label: '26-50 personnes' },
+  { value: '50+', label: 'Plus de 50 personnes' },
+]
 
 export default function ContactPage() {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     company: '',
-    service: '',
-    budget: '',
+    jobTitle: '',
+    reason: '',
+    teamSize: '',
     message: '',
-    newsletter: false
+    newsletter: false,
+    gdpr: false,
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.gdpr) {
+      toast({
+        title: 'Consentement requis',
+        description: 'Veuillez accepter notre politique de confidentialité.',
+        variant: 'destructive',
+      })
+      return
+    }
     toast({
-      title: "Message envoyé!",
-      description: "Nous vous recontacterons dans les 24h.",
+      title: 'Message envoyé !',
+      description: 'Notre équipe vous répondra dans les 24h ouvrées.',
     })
-    // Reset form
     setFormData({
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       phone: '',
       company: '',
-      service: '',
-      budget: '',
+      jobTitle: '',
+      reason: '',
+      teamSize: '',
       message: '',
-      newsletter: false
+      newsletter: false,
+      gdpr: false,
     })
   }
 
@@ -67,128 +116,181 @@ export default function ContactPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Hero Section */}
-      <section className="container py-20">
+      <section className="relative overflow-hidden py-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/10 to-background" />
         <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-          className="text-center mb-12"
-        >
-          <motion.div variants={fadeIn}>
-            <Badge className="mb-4">Contact</Badge>
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 0.15, scale: 1 }}
+          transition={{ duration: 1.2 }}
+          className="absolute top-1/4 -right-1/4 h-[400px] w-[400px] rounded-full bg-primary/20 blur-3xl"
+        />
+
+        <div className="container relative">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+            className="text-center mb-12"
+          >
+            <motion.div variants={fadeIn}>
+              <Badge className="mb-4 bg-accent text-accent-foreground border-0">
+                <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                Contactez-nous
+              </Badge>
+            </motion.div>
+            <motion.h1
+              variants={fadeIn}
+              className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
+            >
+              Parlons de votre{' '}
+              <span className="bg-gradient-to-r from-primary via-chart-2 to-primary bg-clip-text text-transparent">
+                projet commercial
+              </span>
+            </motion.h1>
+            <motion.p
+              variants={fadeIn}
+              className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto"
+            >
+              Que vous souhaitiez une démo personnalisée, des informations sur nos tarifs
+              ou simplement discuter de vos enjeux commerciaux, notre équipe est là pour vous.
+            </motion.p>
           </motion.div>
-          <motion.h1
-            variants={fadeIn}
-            className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
-          >
-            Parlons de votre{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              projet
-            </span>
-          </motion.h1>
-          <motion.p
-            variants={fadeIn}
-            className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto"
-          >
-            Nous sommes là pour répondre à toutes vos questions et vous accompagner dans votre
-            transformation digitale.
-          </motion.p>
-        </motion.div>
+        </div>
       </section>
 
-      {/* Contact Info Cards */}
+      {/* Quick Contact Options */}
       <section className="container pb-12">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={stagger}
-          className="grid gap-6 md:grid-cols-3 mb-12"
+          className="grid gap-6 md:grid-cols-4 mb-12"
         >
           {[
             {
+              icon: PlayCircle,
+              title: 'Voir une démo',
+              content: 'Découvrez le CRM en action',
+              description: 'Vidéo de 5 minutes',
+              action: 'Regarder',
+              href: '#demo',
+            },
+            {
+              icon: Calendar,
+              title: 'Réserver un appel',
+              content: 'Discutez avec un expert',
+              description: '30 min, sans engagement',
+              action: 'Planifier',
+              href: '#call',
+            },
+            {
               icon: Mail,
               title: 'Email',
-              content: 'contact@yourbrand.com',
-              description: 'Réponse sous 24h'
+              content: 'contact@crmpro.fr',
+              description: 'Réponse sous 24h',
+              action: 'Écrire',
+              href: 'mailto:contact@crmpro.fr',
             },
             {
               icon: Phone,
               title: 'Téléphone',
               content: '+33 1 23 45 67 89',
-              description: 'Lun-Ven 9h-18h'
+              description: 'Lun-Ven 9h-18h',
+              action: 'Appeler',
+              href: 'tel:+33123456789',
             },
-            {
-              icon: MapPin,
-              title: 'Adresse',
-              content: '123 Avenue des Champs-Élysées',
-              description: '75008 Paris, France'
-            }
           ].map((item) => (
             <motion.div key={item.title} variants={fadeIn}>
-              <Card className="text-center hover:shadow-lg transition-shadow h-full">
-                <CardHeader>
-                  <div className="mx-auto mb-4 inline-flex rounded-full bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white">
+              <Card className="h-full hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-2 border-transparent hover:border-primary/20">
+                <CardHeader className="text-center">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="mx-auto mb-4 inline-flex rounded-2xl bg-primary/10 p-4 text-primary"
+                  >
                     <item.icon className="h-6 w-6" />
-                  </div>
+                  </motion.div>
                   <CardTitle className="text-lg">{item.title}</CardTitle>
                   <CardDescription className="font-medium text-foreground">
                     {item.content}
                   </CardDescription>
-                  <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                  <p className="text-xs text-muted-foreground">{item.description}</p>
                 </CardHeader>
+                <CardContent className="text-center">
+                  <Button asChild variant="outline" size="sm" className="w-full border-2 hover:bg-primary hover:text-primary-foreground transition-all">
+                    <Link href={item.href}>
+                      {item.action} <ArrowRight className="ml-2 h-3 w-3" />
+                    </Link>
+                  </Button>
+                </CardContent>
               </Card>
             </motion.div>
           ))}
         </motion.div>
       </section>
 
-      {/* Contact Form */}
+      {/* Contact Form Section */}
       <section className="container pb-20">
-        <div className="grid gap-12 lg:grid-cols-2">
+        <div className="grid gap-12 lg:grid-cols-5">
           {/* Form */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="lg:col-span-3"
           >
-            <Card>
+            <Card className="border-2">
               <CardHeader>
                 <CardTitle className="text-2xl">Envoyez-nous un message</CardTitle>
                 <CardDescription>
-                  Remplissez le formulaire ci-dessous et nous vous répondrons dans les plus brefs délais
+                  Remplissez ce formulaire et notre équipe vous répondra dans les plus brefs délais.
+                  Tous les champs marqués * sont obligatoires.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Nom complet *</Label>
+                      <Label htmlFor="firstName">Prénom *</Label>
                       <Input
-                        id="name"
-                        name="name"
-                        placeholder="Jean Dupont"
-                        value={formData.name}
+                        id="firstName"
+                        name="firstName"
+                        placeholder="Jean"
+                        value={formData.firstName}
                         onChange={handleChange}
                         required
+                        className="border-2 focus:border-primary"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
+                      <Label htmlFor="lastName">Nom *</Label>
                       <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="jean@exemple.com"
-                        value={formData.email}
+                        id="lastName"
+                        name="lastName"
+                        placeholder="Dupont"
+                        value={formData.lastName}
                         onChange={handleChange}
                         required
+                        className="border-2 focus:border-primary"
                       />
                     </div>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email professionnel *</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="jean.dupont@entreprise.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="border-2 focus:border-primary"
+                      />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Téléphone</Label>
                       <Input
@@ -198,197 +300,327 @@ export default function ContactPage() {
                         placeholder="+33 6 12 34 56 78"
                         value={formData.phone}
                         onChange={handleChange}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Entreprise</Label>
-                      <Input
-                        id="company"
-                        name="company"
-                        placeholder="Votre entreprise"
-                        value={formData.company}
-                        onChange={handleChange}
+                        className="border-2 focus:border-primary"
                       />
                     </div>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="service">Service souhaité *</Label>
+                      <Label htmlFor="company">Entreprise *</Label>
+                      <Input
+                        id="company"
+                        name="company"
+                        placeholder="Nom de votre entreprise"
+                        value={formData.company}
+                        onChange={handleChange}
+                        required
+                        className="border-2 focus:border-primary"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="jobTitle">Fonction</Label>
+                      <Input
+                        id="jobTitle"
+                        name="jobTitle"
+                        placeholder="Directeur commercial"
+                        value={formData.jobTitle}
+                        onChange={handleChange}
+                        className="border-2 focus:border-primary"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="reason">Objet de votre demande *</Label>
                       <Select
-                        value={formData.service}
-                        onValueChange={(value) => setFormData({ ...formData, service: value })}
+                        value={formData.reason}
+                        onValueChange={(value) => setFormData({ ...formData, reason: value })}
                         required
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un service" />
+                        <SelectTrigger className="border-2">
+                          <SelectValue placeholder="Sélectionnez un sujet" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="web">Développement Web</SelectItem>
-                          <SelectItem value="design">Design UI/UX</SelectItem>
-                          <SelectItem value="ecommerce">E-commerce</SelectItem>
-                          <SelectItem value="consulting">Consulting</SelectItem>
-                          <SelectItem value="other">Autre</SelectItem>
+                          {contactReasons.map((reason) => (
+                            <SelectItem key={reason.value} value={reason.value}>
+                              {reason.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="budget">Budget estimé</Label>
+                      <Label htmlFor="teamSize">Taille de l'équipe commerciale</Label>
                       <Select
-                        value={formData.budget}
-                        onValueChange={(value) => setFormData({ ...formData, budget: value })}
+                        value={formData.teamSize}
+                        onValueChange={(value) => setFormData({ ...formData, teamSize: value })}
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un budget" />
+                        <SelectTrigger className="border-2">
+                          <SelectValue placeholder="Nombre de commerciaux" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="small">{"< 5 000€"}</SelectItem>
-                          <SelectItem value="medium">5 000€ - 15 000€</SelectItem>
-                          <SelectItem value="large">15 000€ - 50 000€</SelectItem>
-                          <SelectItem value="enterprise">{"> 50 000€"}</SelectItem>
+                          {teamSizes.map((size) => (
+                            <SelectItem key={size.value} value={size.value}>
+                              {size.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="message">Message *</Label>
+                    <Label htmlFor="message">Votre message *</Label>
                     <Textarea
                       id="message"
                       name="message"
-                      placeholder="Décrivez votre projet en quelques mots..."
-                      rows={6}
+                      placeholder="Décrivez votre besoin, vos enjeux commerciaux actuels, ou posez-nous vos questions..."
+                      rows={5}
                       value={formData.message}
                       onChange={handleChange}
                       required
+                      className="border-2 focus:border-primary"
                     />
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="newsletter"
-                      checked={formData.newsletter}
-                      onCheckedChange={(checked) =>
-                        setFormData({ ...formData, newsletter: checked as boolean })
-                      }
-                    />
-                    <Label
-                      htmlFor="newsletter"
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      Je souhaite recevoir la newsletter avec les dernières actualités
-                    </Label>
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="newsletter"
+                        checked={formData.newsletter}
+                        onCheckedChange={(checked) =>
+                          setFormData({ ...formData, newsletter: checked as boolean })
+                        }
+                      />
+                      <Label htmlFor="newsletter" className="text-sm font-normal cursor-pointer leading-relaxed">
+                        Je souhaite recevoir les actualités produit, conseils commerciaux et invitations aux webinaires
+                      </Label>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="gdpr"
+                        checked={formData.gdpr}
+                        onCheckedChange={(checked) =>
+                          setFormData({ ...formData, gdpr: checked as boolean })
+                        }
+                        required
+                      />
+                      <Label htmlFor="gdpr" className="text-sm font-normal cursor-pointer leading-relaxed">
+                        J'accepte que mes données soient traitées conformément à la{' '}
+                        <Link href="/privacy" className="text-primary underline hover:text-primary/80 transition-colors">
+                          politique de confidentialité
+                        </Link>{' '}
+                        *
+                      </Label>
+                    </div>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg">
+                  <Button type="submit" className="w-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all" size="lg">
                     <Send className="mr-2 h-4 w-4" />
                     Envoyer le message
                   </Button>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    En soumettant ce formulaire, vous acceptez notre politique de confidentialité
-                  </p>
                 </form>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Additional Info */}
+          {/* Sidebar */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="space-y-6"
+            className="lg:col-span-2 space-y-6"
           >
-            {/* Office Hours */}
-            <Card>
+            {/* Response Time */}
+            <Card className="bg-gradient-to-br from-primary via-chart-2 to-primary text-primary-foreground border-0 shadow-xl shadow-primary/25">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="inline-flex rounded-full bg-blue-100 dark:bg-blue-900 p-2">
-                    <Clock className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <CardTitle>Horaires d'ouverture</CardTitle>
+                  <Clock className="h-6 w-6" />
+                  <CardTitle className="text-primary-foreground">Temps de réponse</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Lundi - Vendredi</span>
-                  <span className="font-medium">9h00 - 18h00</span>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="opacity-80">Demande de démo</span>
+                  <span className="font-semibold">{'< 4h'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Samedi</span>
-                  <span className="font-medium">10h00 - 14h00</span>
+                <div className="flex justify-between items-center">
+                  <span className="opacity-80">Question commerciale</span>
+                  <span className="font-semibold">{'< 24h'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Dimanche</span>
-                  <span className="font-medium">Fermé</span>
+                <div className="flex justify-between items-center">
+                  <span className="opacity-80">Support technique</span>
+                  <span className="font-semibold">{'< 2h'}</span>
                 </div>
+                <p className="text-sm opacity-75 pt-2 border-t border-primary-foreground/20">
+                  Horaires : Lun-Ven 9h-18h (CET)
+                </p>
               </CardContent>
             </Card>
 
-            {/* FAQ Quick Links */}
-            <Card>
+            {/* Why Contact Us */}
+            <Card className="border-2">
               <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="inline-flex rounded-full bg-purple-100 dark:bg-purple-900 p-2">
-                    <MessageCircle className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <CardTitle>Questions fréquentes</CardTitle>
-                </div>
-                <CardDescription>
-                  Consultez notre FAQ pour des réponses rapides
-                </CardDescription>
+                <CardTitle className="text-lg">Ce que vous obtiendrez</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/services#faq">Quels sont vos délais?</a>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/services#faq">Comment se passe le paiement?</a>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href="/services#faq">Proposez-vous un support?</a>
-                </Button>
+                {[
+                  'Réponse personnalisée d\'un expert CRM',
+                  'Démo adaptée à votre secteur d\'activité',
+                  'Estimation gratuite du ROI potentiel',
+                  'Conseils pour migrer vos données',
+                  'Aucun engagement, aucune pression',
+                ].map((item) => (
+                  <motion.div
+                    key={item}
+                    whileHover={{ x: 5 }}
+                    className="flex items-start gap-2 transition-transform"
+                  >
+                    <div className="shrink-0 mt-0.5 rounded-full bg-primary p-0.5">
+                      <Check className="h-3.5 w-3.5 text-primary-foreground" />
+                    </div>
+                    <span className="text-sm">{item}</span>
+                  </motion.div>
+                ))}
               </CardContent>
             </Card>
 
-            {/* Social Proof */}
-            <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            {/* Office Info */}
+            <Card className="border-2">
               <CardHeader>
-                <CardTitle className="text-white">Réponse garantie sous 24h</CardTitle>
-                <CardDescription className="text-blue-100">
-                  Notre équipe s'engage à vous répondre rapidement pour démarrer votre projet dans les meilleures conditions
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <MapPin className="h-5 w-5 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Nos bureaux</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="font-medium">Paris (Siège)</div>
+                  <p className="text-sm text-muted-foreground">
+                    42 rue de la Performance<br />
+                    75008 Paris, France
+                  </p>
+                </div>
+                <div>
+                  <div className="font-medium">Berlin</div>
+                  <p className="text-sm text-muted-foreground">
+                    Friedrichstraße 123<br />
+                    10117 Berlin, Allemagne
+                  </p>
+                </div>
+                <div>
+                  <div className="font-medium">Madrid</div>
+                  <p className="text-sm text-muted-foreground">
+                    Calle Gran Vía 45<br />
+                    28013 Madrid, Espagne
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Support for Existing Customers */}
+            <Card className="border-2 border-primary/20 bg-primary/5">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <Headphones className="h-5 w-5 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">Déjà client ?</CardTitle>
+                </div>
+                <CardDescription>
+                  Accédez à votre espace support dédié avec chat en direct et base de connaissances.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold">98%</div>
-                    <div className="text-xs text-blue-100">Satisfaction</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">24h</div>
-                    <div className="text-xs text-blue-100">Réponse</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">250+</div>
-                    <div className="text-xs text-blue-100">Clients</div>
-                  </div>
-                </div>
+                <Button asChild variant="outline" className="w-full border-2 hover:bg-primary hover:text-primary-foreground transition-all">
+                  <Link href="/dashboard">
+                    Accéder au support <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
+          </motion.div>
+        </div>
+      </section>
 
-            {/* Map placeholder */}
-            <Card className="overflow-hidden">
-              <div className="h-64 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
-                <MapPin className="h-16 w-16 text-blue-600" />
-              </div>
-              <CardContent className="p-4">
-                <p className="text-sm font-medium">123 Avenue des Champs-Élysées</p>
-                <p className="text-sm text-muted-foreground">75008 Paris, France</p>
-              </CardContent>
-            </Card>
+      {/* FAQ Quick Links */}
+      <section className="bg-muted/30 border-y py-20">
+        <div className="container">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="text-center mb-12"
+          >
+            <motion.div variants={fadeIn}>
+              <Badge variant="secondary" className="mb-4">Questions fréquentes</Badge>
+            </motion.div>
+            <motion.h2
+              variants={fadeIn}
+              className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl"
+            >
+              Vous avez peut-être déjà la réponse
+            </motion.h2>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {[
+              {
+                icon: Users,
+                question: 'Combien coûte le CRM ?',
+                answer: 'À partir de 29€/utilisateur/mois. Essai gratuit 14 jours.',
+                link: '/pricing',
+              },
+              {
+                icon: Clock,
+                question: 'Combien de temps pour démarrer ?',
+                answer: 'Configuration en 5 minutes, import des données en 1h.',
+                link: '/features',
+              },
+              {
+                icon: Building2,
+                question: 'Pour quels types d\'entreprises ?',
+                answer: 'PME, startups, indépendants, équipes commerciales de 1 à 500.',
+                link: '/about',
+              },
+              {
+                icon: MessageCircle,
+                question: 'Quel support est inclus ?',
+                answer: 'Email, chat, téléphone selon le plan. Base de connaissances 24/7.',
+                link: '/pricing',
+              },
+            ].map((faq) => (
+              <motion.div key={faq.question} variants={fadeIn}>
+                <Card className="h-full hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-2 border-transparent hover:border-primary/20">
+                  <CardHeader>
+                    <div className="rounded-xl bg-primary/10 p-2 w-fit mb-2">
+                      <faq.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <CardTitle className="text-base">{faq.question}</CardTitle>
+                    <CardDescription>{faq.answer}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
+                      <Link href={faq.link}>
+                        En savoir plus <ArrowRight className="ml-1 h-3 w-3" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>

@@ -1,8 +1,27 @@
 import type { Metadata } from 'next'
+import { Inter, Lora, Fira_Code } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { ThemeProvider } from '@/hooks/use-theme'
 import '../globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
+
+const lora = Lora({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  display: 'swap',
+})
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'SaaS Dashboard',
@@ -21,7 +40,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className="font-sans antialiased">
+      <body className={`${inter.variable} ${lora.variable} ${firaCode.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider defaultTheme="default" defaultMode="light" storageKey="ui-theme">
             {children}

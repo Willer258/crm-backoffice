@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +14,7 @@ import {
   Phone,
   Mail,
   Calendar,
-  Target
+  Target,
 } from 'lucide-react'
 import Link from 'next/link'
 import {
@@ -22,9 +22,20 @@ import {
   dealsByMonth,
   dealsByStage,
   mockActivities,
-  mockDeals
+  mockDeals,
 } from '@/lib/data/mock'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts'
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444']
 
@@ -37,9 +48,9 @@ const activityIcons = {
 }
 
 export default function DashboardPage() {
-  const recentActivities = mockActivities.filter(a => a.status === 'scheduled').slice(0, 5)
+  const recentActivities = mockActivities.filter((a) => a.status === 'scheduled').slice(0, 5)
   const upcomingDeals = mockDeals
-    .filter(d => !['won', 'lost'].includes(d.stage))
+    .filter((d) => !['won', 'lost'].includes(d.stage))
     .sort((a, b) => new Date(a.closeDate).getTime() - new Date(b.closeDate).getTime())
     .slice(0, 5)
 
@@ -73,14 +84,12 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Contacts
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Contacts</CardTitle>
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dashboardStats.totalContacts}</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <p className="text-muted-foreground flex items-center gap-1 text-xs">
               <ArrowUp className="h-3 w-3 text-green-600" />
               <span className="text-green-600">+12%</span> vs mois dernier
             </p>
@@ -89,14 +98,12 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Entreprises
-            </CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Entreprises</CardTitle>
+            <Building2 className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dashboardStats.totalCompanies}</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <p className="text-muted-foreground flex items-center gap-1 text-xs">
               <ArrowUp className="h-3 w-3 text-green-600" />
               <span className="text-green-600">+8%</span> vs mois dernier
             </p>
@@ -105,29 +112,30 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Deals Actifs
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Deals Actifs</CardTitle>
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dashboardStats.activeDeals}</div>
-            <p className="text-xs text-muted-foreground">
-              Valeur: <span className="font-semibold">{(dashboardStats.pipelineValue / 1000).toFixed(0)}K €</span>
+            <p className="text-muted-foreground text-xs">
+              Valeur:{' '}
+              <span className="font-semibold">
+                {(dashboardStats.pipelineValue / 1000).toFixed(0)}K €
+              </span>
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              CA du Mois
-            </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">CA du Mois</CardTitle>
+            <DollarSign className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(dashboardStats.totalRevenue / 1000).toFixed(0)}K €</div>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <div className="text-2xl font-bold">
+              {(dashboardStats.totalRevenue / 1000).toFixed(0)}K €
+            </div>
+            <p className="text-muted-foreground flex items-center gap-1 text-xs">
               <ArrowUp className="h-3 w-3 text-green-600" />
               <span className="text-green-600">+47%</span> vs mois dernier
             </p>
@@ -144,7 +152,7 @@ export default function DashboardPage() {
             <CardDescription>Nombre de deals gagnés sur l&apos;année</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} debounce={300}>
               <BarChart data={dealsByMonth}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="month" className="text-xs" />
@@ -163,7 +171,7 @@ export default function DashboardPage() {
             <CardDescription>Répartition des deals par étape</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} debounce={300}>
               <PieChart>
                 <Pie
                   data={dealsByStage}
@@ -208,17 +216,18 @@ export default function DashboardPage() {
                 const Icon = activityIcons[activity.type]
                 return (
                   <div key={activity.id} className="flex items-start gap-3">
-                    <div className="mt-1 rounded-full bg-primary/10 p-2">
-                      <Icon className="h-4 w-4 text-primary" />
+                    <div className="bg-primary/10 mt-1 rounded-full p-2">
+                      <Icon className="text-primary h-4 w-4" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium">{activity.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {activity.contactName} • {new Date(activity.date).toLocaleDateString('fr-FR', {
+                      <p className="text-muted-foreground text-xs">
+                        {activity.contactName} •{' '}
+                        {new Date(activity.date).toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'short',
                           hour: '2-digit',
-                          minute: '2-digit'
+                          minute: '2-digit',
                         })}
                       </p>
                     </div>
@@ -246,14 +255,18 @@ export default function DashboardPage() {
                 <div key={deal.id} className="flex items-center justify-between">
                   <div className="flex-1 space-y-1">
                     <p className="text-sm font-medium">{deal.companyName}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       {deal.value.toLocaleString('fr-FR')} € • {deal.probability}%
                     </p>
                   </div>
                   <Badge variant={deal.probability >= 70 ? 'default' : 'secondary'}>
-                    {deal.stage === 'negotiation' ? 'Négociation' :
-                     deal.stage === 'proposal' ? 'Proposition' :
-                     deal.stage === 'qualification' ? 'Qualification' : 'Prospect'}
+                    {deal.stage === 'negotiation'
+                      ? 'Négociation'
+                      : deal.stage === 'proposal'
+                        ? 'Proposition'
+                        : deal.stage === 'qualification'
+                          ? 'Qualification'
+                          : 'Prospect'}
                   </Badge>
                 </div>
               ))}
@@ -270,20 +283,26 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Taux de conversion</span>
-                <span className="text-2xl font-bold text-green-600">{dashboardStats.conversionRate}%</span>
+                <span className="text-muted-foreground text-sm">Taux de conversion</span>
+                <span className="text-2xl font-bold text-green-600">
+                  {dashboardStats.conversionRate}%
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Valeur moyenne deal</span>
-                <span className="text-2xl font-bold">{(dashboardStats.avgDealValue / 1000).toFixed(0)}K €</span>
+                <span className="text-muted-foreground text-sm">Valeur moyenne deal</span>
+                <span className="text-2xl font-bold">
+                  {(dashboardStats.avgDealValue / 1000).toFixed(0)}K €
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Deals gagnés</span>
+                <span className="text-muted-foreground text-sm">Deals gagnés</span>
                 <span className="text-2xl font-bold text-green-600">{dashboardStats.wonDeals}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Pipeline total</span>
-                <span className="text-2xl font-bold">{(dashboardStats.pipelineValue / 1000).toFixed(0)}K €</span>
+                <span className="text-muted-foreground text-sm">Pipeline total</span>
+                <span className="text-2xl font-bold">
+                  {(dashboardStats.pipelineValue / 1000).toFixed(0)}K €
+                </span>
               </div>
             </div>
           </CardContent>
