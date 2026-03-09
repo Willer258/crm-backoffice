@@ -3,6 +3,7 @@ import { Inter, Lora, Fira_Code } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { ThemeProvider } from '@/hooks/use-theme'
+import { Toaster } from '@/components/ui/sonner'
 import '../globals.css'
 
 const inter = Inter({
@@ -44,6 +45,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider defaultTheme="default" defaultMode="light" storageKey="ui-theme">
             {children}
+            <Toaster position="top-right" richColors closeButton />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

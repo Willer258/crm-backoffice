@@ -1,20 +1,21 @@
-// Authentication Types and Interfaces
+// Authentication Types and Interfaces for CRM API
+
+// ============ User Types ============
 
 export interface User {
   id: string
   email: string
   emailVerified: boolean
-  name: string
-  firstName?: string
-  lastName?: string
+  name?: string
+  firstName: string
+  lastName: string
   avatar?: string
   phone?: string
   role: 'user' | 'admin' | 'moderator'
-  provider: 'email' | 'google' | 'github' | 'facebook' | 'twitter'
+  provider?: 'email' | 'google' | 'github' | 'keycloak'
   providerId?: string
-  passwordHash?: string // Only for email provider
   twoFactorEnabled: boolean
-  twoFactorSecret?: string
+  currentWorkspace?: Workspace
   preferences?: UserPreferences
   createdAt: string
   updatedAt: string
@@ -22,9 +23,85 @@ export interface User {
   loginCount?: number
 }
 
+export interface Workspace {
+  id: string
+  name: string
+  slug?: string
+  logo?: string
+  role: 'owner' | 'admin' | 'member' | 'viewer'
+  createdAt?: string
+  updatedAt?: string
+  membersCount?: number
+}
+
+export interface WorkspaceMember {
+  id: string
+  userId: string
+  email: string
+  firstName?: string
+  lastName?: string
+  name?: string
+  avatar?: string
+  role: 'owner' | 'admin' | 'member' | 'viewer'
+  joinedAt: string
+  invitedBy?: string
+}
+
+export interface WorkspaceInvitation {
+  id: string
+  email: string
+  role: 'admin' | 'member' | 'viewer'
+  status: 'pending' | 'accepted' | 'expired'
+  invitedBy: string
+  createdAt: string
+  expiresAt: string
+}
+
+// ============ Workspace Request Types ============
+
+export interface CreateWorkspaceRequest {
+  name: string
+  logo?: string | null
+}
+
+export interface UpdateWorkspaceRequest {
+  name?: string
+  logo?: string | null
+}
+
+export interface InviteMemberRequest {
+  email: string
+  role?: 'admin' | 'member' | 'viewer'
+}
+
+export interface SwitchWorkspaceRequest {
+  workspaceId: string
+}
+
+// ============ Workspace Response Types ============
+
+export interface WorkspaceListResponse {
+  status: 'success' | 'error'
+  message?: string
+  data?: Workspace[]
+}
+
+export interface WorkspaceResponse {
+  status: 'success' | 'error'
+  message?: string
+  data?: Workspace
+}
+
+export interface WorkspaceMembersResponse {
+  status: 'success' | 'error'
+  message?: string
+  data?: WorkspaceMember[]
+}
+
 export interface UserPreferences {
   language: string
   currency: string
+  timezone?: string
   notifications: {
     email: boolean
     push: boolean
@@ -33,71 +110,43 @@ export interface UserPreferences {
   marketing: boolean
 }
 
+// ============ Session Types ============
+
 export interface Session {
   id: string
-  userId: string
-  accessToken: string
-  refreshToken: string
-  expiresAt: string
+  deviceName?: string
+  deviceType?: 'mobile' | 'tablet' | 'desktop' | string
+  browser?: string
+  os?: string
   ipAddress?: string
-  userAgent?: string
+  location?: string
   createdAt: string
+  lastUsedAt?: string
+  lastActivity?: string
+  isCurrent?: boolean
 }
 
-export interface PasswordResetToken {
-  id: string
-  userId: string
-  token: string
-  expiresAt: string
-  used: boolean
-  createdAt: string
-}
+// ============ API Request Types ============
 
-export interface EmailVerificationToken {
-  id: string
-  userId: string
-  email: string
-  token: string
-  expiresAt: string
-  used: boolean
-  createdAt: string
-}
-
-export interface Address {
-  id: string
-  userId: string
-  type: 'shipping' | 'billing'
-  isDefault: boolean
-  firstName: string
-  lastName: string
-  company?: string
-  address1: string
-  address2?: string
-  city: string
-  state: string
-  postalCode: string
-  country: string
-  phone: string
-  createdAt: string
-  updatedAt: string
-}
-
-// Request Types
 export interface RegisterRequest {
   email: string
   password: string
-  confirmPassword: string
-  name: string
-  firstName?: string
-  lastName?: string
-  acceptTerms: boolean
+  firstName: string
+  lastName: string
 }
 
 export interface LoginRequest {
   email: string
   password: string
-  remember?: boolean
-  twoFactorCode?: string
+}
+
+export interface VerifyEmailOTPRequest {
+  email: string
+  code: string
+}
+
+export interface ResendOTPRequest {
+  email: string
 }
 
 export interface ForgotPasswordRequest {
@@ -107,13 +156,43 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
   token: string
   password: string
-  confirmPassword: string
 }
 
 export interface ChangePasswordRequest {
   currentPassword: string
   newPassword: string
-  confirmPassword: string
+  logoutOtherDevices?: boolean
+}
+
+export interface Enable2FARequest {
+  code: string
+}
+
+export interface Disable2FARequest {
+  password: string
+}
+
+export interface Verify2FARequest {
+  email: string
+  code: string
+}
+
+export interface Recovery2FARequest {
+  email: string
+  recoveryCode: string
+}
+
+export interface MagicLinkRequest {
+  email: string
+}
+
+export interface MagicLinkVerifyRequest {
+  token: string
+}
+
+export interface OAuthCallbackRequest {
+  code: string
+  state?: string
 }
 
 export interface UpdateProfileRequest {
@@ -125,69 +204,107 @@ export interface UpdateProfileRequest {
   preferences?: Partial<UserPreferences>
 }
 
-export interface Enable2FARequest {
-  password: string
-}
+// ============ API Response Types ============
 
-export interface Verify2FARequest {
-  code: string
-}
-
-export interface LinkAccountRequest {
-  provider: 'google' | 'github' | 'facebook' | 'twitter'
-  accessToken: string
-}
-
-// Response Types
-export interface AuthResponse {
-  success: boolean
-  data?: {
-    user: Omit<User, 'passwordHash' | 'twoFactorSecret'>
-    accessToken?: string
-    refreshToken?: string
-    session?: Session
-  }
-  error?: string
+export interface ApiResponse<T = unknown> {
+  status: 'success' | 'error'
   message?: string
+  data?: T
+  errors?: Record<string, string[]>
 }
 
-export interface SessionResponse {
-  success: boolean
+export interface AuthResponse {
+  status: 'success' | 'error'
+  message?: string
+  token?: string
+  refreshToken?: string
+  user?: User
+  requires2fa?: boolean
   data?: {
-    user: Omit<User, 'passwordHash' | 'twoFactorSecret'>
-    session: Session
+    userId?: string
+    email?: string
+    otpCode?: string // Dev only
+    token?: string
+    refreshToken?: string
+    user?: User
   }
-  error?: string
 }
 
-export interface QRCodeResponse {
-  success: boolean
+export interface RegisterResponse {
+  status: 'success' | 'error'
+  message?: string
   data?: {
-    qrCode: string // Base64 image
+    userId: string
+    email: string
+    otpCode?: string // Dev only
+  }
+}
+
+export interface TwoFASetupResponse {
+  status: 'success' | 'error'
+  message?: string
+  data?: {
     secret: string
-    backupCodes: string[]
+    qrCodeUrl: string
+    manualEntryKey: string
   }
-  error?: string
 }
 
-// Validation Types
-export interface PasswordStrength {
-  score: 0 | 1 | 2 | 3 | 4 // 0 = very weak, 4 = very strong
-  feedback: string[]
-  meetsRequirements: boolean
+export interface TwoFAEnableResponse {
+  status: 'success' | 'error'
+  message?: string
+  data?: {
+    recoveryCodes: string[]
+  }
 }
 
-export interface ValidationError {
-  field: string
-  message: string
+export interface TwoFAStatusResponse {
+  status: 'success' | 'error'
+  data?: {
+    enabled: boolean
+    recoveryCodesCount?: number
+  }
 }
 
-// JWT Payload
+export interface OAuthProviderResponse {
+  status: 'success' | 'error'
+  data?: {
+    providers: Array<{
+      name: string
+      enabled: boolean
+    }>
+  }
+}
+
+export interface OAuthConnectResponse {
+  status: 'success' | 'error'
+  data?: {
+    authorizationUrl: string
+    state: string
+  }
+}
+
+export interface OAuthConnection {
+  id: string
+  provider: 'google' | 'github' | 'keycloak'
+  email?: string
+  name?: string
+  connectedAt: string
+}
+
+export interface SessionsResponse {
+  status: 'success' | 'error'
+  data?: Session[]
+}
+
+// ============ JWT Types ============
+
 export interface JWTPayload {
   userId: string
   email: string
   role: User['role']
   sessionId: string
+  workspaceId?: string
   iat: number
   exp: number
 }
@@ -199,27 +316,65 @@ export interface RefreshTokenPayload {
   exp: number
 }
 
-// Account Linking
-export interface LinkedAccount {
-  id: string
-  userId: string
-  provider: User['provider']
-  providerId: string
-  email?: string
-  name?: string
-  avatar?: string
-  accessToken?: string
-  refreshToken?: string
-  createdAt: string
-  updatedAt: string
+// ============ Password Validation ============
+
+export interface PasswordStrength {
+  score: 0 | 1 | 2 | 3 | 4
+  feedback: string[]
+  meetsRequirements: boolean
 }
 
-// Audit Log
+export interface ValidationError {
+  field: string
+  message: string
+}
+
+// ============ Auth Store Types ============
+
+export interface AuthState {
+  user: User | null
+  accessToken: string | null
+  refreshToken: string | null
+  currentWorkspaceId: string | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  requires2FA: boolean
+  pendingEmail: string | null
+}
+
+export interface AuthActions {
+  setUser: (user: User | null) => void
+  setTokens: (accessToken: string, refreshToken: string) => void
+  setCurrentWorkspace: (workspaceId: string) => void
+  setRequires2FA: (requires: boolean, email?: string) => void
+  setLoading: (loading: boolean) => void
+  logout: () => void
+  hasPermission: (permission: string) => boolean
+}
+
+// ============ 2FA Store Types ============
+
+export interface TwoFAState {
+  secret: string | null
+  qrCodeUrl: string | null
+  recoveryCodes: string[]
+  isEnabled: boolean
+}
+
+export interface TwoFAActions {
+  setSetupData: (secret: string, qrCodeUrl: string) => void
+  setRecoveryCodes: (codes: string[]) => void
+  setEnabled: (enabled: boolean) => void
+  clearSetup: () => void
+}
+
+// ============ Audit Types ============
+
 export interface AuditLog {
   id: string
   userId: string
   action: AuditAction
-  details?: Record<string, any>
+  details?: Record<string, unknown>
   ipAddress?: string
   userAgent?: string
   createdAt: string
@@ -242,25 +397,10 @@ export type AuditAction =
   | 'session.created'
   | 'session.revoked'
 
-// Rate Limiting
+// ============ Rate Limiting ============
+
 export interface RateLimitInfo {
   limit: number
   remaining: number
-  reset: number // Timestamp
+  reset: number
 }
-
-// Email Templates
-export interface EmailTemplate {
-  subject: string
-  html: string
-  text: string
-}
-
-export type EmailType =
-  | 'welcome'
-  | 'email-verification'
-  | 'password-reset'
-  | 'password-changed'
-  | 'login-alert'
-  | '2fa-code'
-  | 'account-deleted'
