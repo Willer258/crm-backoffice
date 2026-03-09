@@ -1,0 +1,4833 @@
+{
+	"info": {
+		"_postman_id": "ebe37ada-12df-46f3-a453-781951f984db",
+		"name": "CRM API - Complete Collection",
+		"description": "Collection Postman complète pour le CRM API\n\n**Base URL:** http://crm-api.test\n\n**Features:**\n- ✅ Auto-capture JWT token après login\n- ✅ Auto-capture workspace_id\n- ✅ Auto-capture IDs (contact, company, deal, etc.)\n- ✅ OTP Email Verification System\n- ✅ Two-Factor Authentication (TOTP)\n- ✅ Magic Links (Passwordless)\n- ✅ OAuth2/OIDC (Google, GitHub, Keycloak)\n- ✅ Session Management\n- ✅ 140+ endpoints organisés en 25 catégories\n- ✅ Scripts automatiques pour tous les endpoints critiques\n- ✅ Exemples de données réalistes\n\n**Authentication Flow (Standard):**\n1. Execute 'Auth > Auth Register' → OTP code sent to email\n2. Execute 'Auth > Auth Verify Email OTP' with code from email\n3. Execute 'Auth > Auth Login' → JWT Token saved automatically\n4. All other endpoints are ready to use!\n\n**Alternative Auth Methods:**\n- 2FA TOTP: Use 'Two-Factor Authentication' folder\n- Magic Links: Use 'Magic Links' folder\n- OAuth2: Use 'OAuth2 / OIDC' folder\n\nUpdated: 2025-12-10 (Added 2FA, Magic Links, OAuth2, Session Management)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17654506",
+		"_collection_link": "https://grey-meteor-447248.postman.co/workspace/Team-Workspace~f93fdcc9-2dbe-40ec-8576-ff424e4a52f7/collection/17654506-ebe37ada-12df-46f3-a453-781951f984db?action=share&source=collection_link&creator=17654506"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    console.log('✅ User registered successfully');",
+									"    ",
+									"    // Save user details",
+									"    if (res.data) {",
+									"        if (res.data.userId) {",
+									"            pm.collectionVariables.set('user_id', res.data.userId);",
+									"            console.log('📝 User ID saved:', res.data.userId);",
+									"        }",
+									"        if (res.data.email) {",
+									"            pm.collectionVariables.set('user_email', res.data.email);",
+									"            console.log('📧 Email saved:', res.data.email);",
+									"        }",
+									"        if (res.data.otpCode) {",
+									"            pm.collectionVariables.set('otp_code', res.data.otpCode);",
+									"            console.log('🔐 OTP Code (dev only):', res.data.otpCode);",
+									"            console.log('📬 Check your email for the OTP code');",
+									"        }",
+									"    }",
+									"    ",
+									"    console.log('⏭️  Next: Use \"Auth Verify Email OTP\" with the code from your email');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"demo@example.com\",\n    \"password\": \"Demo123456!\",\n    \"firstName\": \"Demo\",\n    \"lastName\": \"User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Créer un nouveau compte utilisateur avec vérification par email OTP.\n\n**Système de vérification:**\n- Un code OTP à 6 chiffres est envoyé par email\n- Le code expire après 10 minutes\n- Maximum 5 tentatives de vérification\n\n**Réponse success:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"User registered successfully. Please check your email for the verification code.\",\n    \"data\": {\n        \"userId\": 1,\n        \"email\": \"user@example.com\",\n        \"otpCode\": \"123456\"  // Visible en dev uniquement\n    }\n}\n```\n\n**Next step:** Utiliser \"Auth Verify Email OTP\" avec le code reçu par email"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Verify Email OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    console.log('✅ Email verified successfully');",
+									"    if (res.data && res.data.userId) {",
+									"        pm.collectionVariables.set('user_id', res.data.userId);",
+									"        console.log('📝 User ID saved:', res.data.userId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"code\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/verify-email-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"verify-email-otp"
+							]
+						},
+						"description": "Vérifier l'adresse email avec le code OTP à 6 chiffres reçu par email.\n\n**Sécurité:**\n- Maximum 5 tentatives par code\n- Code expire après 10 minutes\n- Rate limiting: 10 tentatives/15 min\n\n**Réponse success:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Email verified successfully\",\n    \"data\": {\n        \"userId\": 1,\n        \"email\": \"user@example.com\"\n    }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Resend OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    console.log('✅ New OTP code sent');",
+									"    if (res.data && res.data.otpCode) {",
+									"        console.log('🔐 OTP Code (dev only):', res.data.otpCode);",
+									"        pm.collectionVariables.set('otp_code', res.data.otpCode);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/resend-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"resend-otp"
+							]
+						},
+						"description": "Renvoyer un nouveau code OTP de vérification par email.\n\n**Sécurité:**\n- Rate limiting: 5 demandes/15 min\n- Les anciens codes sont automatiquement invalidés\n- Nouveau code valide pendant 10 minutes\n\n**Réponse success:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"Verification code sent successfully\",\n    \"data\": {\n        \"otpCode\": \"123456\"  // Retiré en production\n    }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    pm.collectionVariables.set('jwt_token', res.token);",
+									"    if (res.refreshToken) pm.collectionVariables.set('refresh_token', res.refreshToken);",
+									"    if (res.user) {",
+									"        pm.collectionVariables.set('user_id', res.user.id);",
+									"        if (res.user.currentWorkspace) {",
+									"            pm.collectionVariables.set('workspace_id', res.user.currentWorkspace.id);",
+									"            console.log('✅ Logged in - Workspace:', res.user.currentWorkspace.name);",
+									"        }",
+									"    }",
+									"    console.log('✅ JWT Token saved');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"demo@example.com\",\n    \"password\": \"Demo123456!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Refresh",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    pm.collectionVariables.set('jwt_token', res.token);",
+									"    console.log('✅ JWT Token refreshed');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Forgot Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"demo@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Reset Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"reset-token-here\",\n    \"password\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Me",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Two-Factor Authentication (2FA)",
+			"item": [
+				{
+					"name": "2FA Setup - Initier configuration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.secret) {",
+									"        pm.collectionVariables.set('totp_secret', res.data.secret);",
+									"        console.log('\\u2705 2FA Secret saved:', res.data.secret);",
+									"        console.log('\\ud83d\\udcf1 Scan QR code with authenticator app');",
+									"        console.log('QR URL:', res.data.qrCodeUrl);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/setup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"setup"
+							]
+						},
+						"description": "Génère un secret TOTP et retourne l'URL pour le QR code.\n\n**Important:** Le secret doit être scanné avec une app authenticator avant d'activer le 2FA.\n\n**Réponse:**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"secret\": \"JBSWY3DPEHPK3PXP\",\n        \"qrCodeUrl\": \"otpauth://totp/CRM%20Application:user@example.com?...\",\n        \"manualEntryKey\": \"JBSWY3DPEHPK3PXP\"\n    }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2FA Enable - Activer le 2FA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    console.log('\\u2705 2FA Enabled successfully');",
+									"    if (res.data && res.data.recoveryCodes) {",
+									"        console.log('\\u26a0\\ufe0f SAVE THESE RECOVERY CODES:');",
+									"        res.data.recoveryCodes.forEach((code, i) => {",
+									"            console.log(`  ${i+1}. ${code}`);",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/enable",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"enable"
+							]
+						},
+						"description": "Active le 2FA en vérifiant un code TOTP valide.\n\n**Prérequis:** Avoir configuré le secret dans une app authenticator.\n\n**Réponse success:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"2FA enabled successfully\",\n    \"data\": {\n        \"recoveryCodes\": [\"XXXX-XXXX\", ...]\n    }\n}\n```\n\n**IMPORTANT:** Sauvegarder les codes de récupération!"
+					},
+					"response": []
+				},
+				{
+					"name": "2FA Disable - Désactiver le 2FA",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"YourPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/disable",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"disable"
+							]
+						},
+						"description": "Désactive le 2FA. Requiert le mot de passe pour confirmation."
+					},
+					"response": []
+				},
+				{
+					"name": "2FA Verify - Vérifier code lors du login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', res.data.token);",
+									"        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+									"        console.log('\\u2705 2FA Verified - JWT Token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"code\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"verify"
+							]
+						},
+						"description": "Complète le login quand 2FA est activé.\n\n**Flow:**\n1. Login retourne `requires2fa: true`\n2. Appeler cet endpoint avec le code TOTP\n3. Recevoir les tokens JWT\n\n**Réponse:**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJ...\",\n        \"refreshToken\": \"...\",\n        \"user\": {...}\n    }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2FA Recovery - Utiliser code de récupération",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', res.data.token);",
+									"        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+									"        console.log('\\u2705 Recovery successful - JWT Token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"recoveryCode\": \"XXXX-XXXX\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/recovery",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"recovery"
+							]
+						},
+						"description": "Login avec un code de récupération si l'app authenticator n'est pas disponible.\n\n**Note:** Chaque code ne peut être utilisé qu'une seule fois."
+					},
+					"response": []
+				},
+				{
+					"name": "2FA Regenerate Recovery Codes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    console.log('\\u2705 New recovery codes generated');",
+									"    if (res.data && res.data.recoveryCodes) {",
+									"        console.log('\\u26a0\\ufe0f SAVE THESE NEW CODES:');",
+									"        res.data.recoveryCodes.forEach((code, i) => {",
+									"            console.log(`  ${i+1}. ${code}`);",
+									"        });",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/recovery-codes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"recovery-codes"
+							]
+						},
+						"description": "Génère de nouveaux codes de récupération.\n\n**Attention:** Les anciens codes sont invalidés!"
+					},
+					"response": []
+				},
+				{
+					"name": "2FA Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/2fa/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"2fa",
+								"status"
+							]
+						},
+						"description": "Vérifie l'état du 2FA pour l'utilisateur connecté."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour l'authentification à deux facteurs TOTP.\n\nCompatible avec:\n- Google Authenticator\n- Authy\n- 1Password\n- Bitwarden\n- Toute app compatible TOTP RFC 6238"
+		},
+		{
+			"name": "Magic Links (Passwordless)",
+			"item": [
+				{
+					"name": "Magic Link Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    console.log('\\u2705 Magic link request sent');",
+									"    if (res.data && res.data.magicLinkToken) {",
+									"        pm.collectionVariables.set('magic_link_token', res.data.magicLinkToken);",
+									"        console.log('\\ud83d\\udd17 Magic link token (dev):', res.data.magicLinkToken);",
+									"    }",
+									"    console.log('\\ud83d\\udce7 Check your email for the magic link');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/magic-link/request",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"magic-link",
+								"request"
+							]
+						},
+						"description": "Demande l'envoi d'un magic link par email.\n\n**Sécurité:**\n- Lien expire après 15 minutes\n- Usage unique (invalidé après utilisation)\n- Rate limiting: 3 demandes/15 min par compte\n- Rate limiting: 5 demandes/15 min par IP\n\n**Réponse:**\n```json\n{\n    \"status\": \"success\",\n    \"message\": \"If an account exists...\",\n    \"data\": {\n        \"expiresIn\": \"900 seconds\",\n        \"magicLinkToken\": \"...\"  // Dev only\n    }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Magic Link Verify",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', res.data.token);",
+									"        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+									"        console.log('\\u2705 Magic link verified - Logged in');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{magic_link_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/magic-link/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"magic-link",
+								"verify"
+							]
+						},
+						"description": "Vérifie le magic link et authentifie l'utilisateur.\n\n**Réponse success:**\n```json\n{\n    \"status\": \"success\",\n    \"data\": {\n        \"token\": \"eyJ...\",\n        \"refreshToken\": \"...\",\n        \"user\": {...}\n    }\n}\n```"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentification sans mot de passe via liens magiques envoyés par email.\n\nIdéal pour:\n- Utilisateurs qui oublient leur mot de passe\n- Authentification rapide depuis un email\n- Appareils de confiance"
+		},
+		{
+			"name": "OAuth2 / OIDC",
+			"item": [
+				{
+					"name": "OAuth Providers List",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/providers",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"providers"
+							]
+						},
+						"description": "Liste les fournisseurs OAuth configurés et disponibles."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Google Connect",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.state) {",
+									"        pm.collectionVariables.set('oauth_state', res.data.state);",
+									"        console.log('\\ud83d\\udd17 OAuth State saved');",
+									"        console.log('\\u27a1\\ufe0f  Redirect user to:', res.data.authorizationUrl);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/google/connect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"google",
+								"connect"
+							]
+						},
+						"description": "Obtient l'URL d'autorisation Google OAuth.\n\n**Flow:**\n1. Appeler cet endpoint\n2. Rediriger l'utilisateur vers `authorizationUrl`\n3. Après autorisation, Google redirige vers callback avec `code`\n4. Appeler `OAuth Google Callback` avec le code"
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Google Callback",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', res.data.token);",
+									"        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+									"        console.log('\\u2705 Google OAuth successful');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"authorization_code_from_google\",\n    \"state\": \"{{oauth_state}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/google/callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"google",
+								"callback"
+							]
+						},
+						"description": "Échange le code d'autorisation Google contre des tokens."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth GitHub Connect",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.state) {",
+									"        pm.collectionVariables.set('oauth_state', res.data.state);",
+									"        console.log('\\ud83d\\udd17 OAuth State saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/github/connect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"github",
+								"connect"
+							]
+						},
+						"description": "Obtient l'URL d'autorisation GitHub OAuth."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth GitHub Callback",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', res.data.token);",
+									"        pm.collectionVariables.set('refresh_token', res.data.refreshToken);",
+									"        console.log('\\u2705 GitHub OAuth successful');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"authorization_code_from_github\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/github/callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"github",
+								"callback"
+							]
+						},
+						"description": "Échange le code d'autorisation GitHub contre des tokens."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Keycloak Connect",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/keycloak/connect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"keycloak",
+								"connect"
+							]
+						},
+						"description": "Obtient l'URL d'autorisation Keycloak SSO."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Keycloak Callback",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"authorization_code_from_keycloak\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/keycloak/callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"keycloak",
+								"callback"
+							]
+						},
+						"description": "Échange le code d'autorisation Keycloak contre des tokens."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth List Connections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/connections",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"connections"
+							]
+						},
+						"description": "Liste les connexions OAuth de l'utilisateur connecté."
+					},
+					"response": []
+				},
+				{
+					"name": "OAuth Disconnect Provider",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/oauth/google/disconnect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"oauth",
+								"google",
+								"disconnect"
+							]
+						},
+						"description": "Déconnecte un fournisseur OAuth du compte.\n\n**Note:** Impossible si c'est la seule méthode d'authentification."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentification via fournisseurs OAuth2 externes.\n\nFournisseurs supportés:\n- Google\n- GitHub\n- Keycloak (SSO)\n\n**Configuration requise:** Variables d'environnement OAuth dans le backend."
+		},
+		{
+			"name": "Session Management",
+			"item": [
+				{
+					"name": "List Active Sessions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('session_id', res.data[0].id);",
+									"        console.log('\\u2705 Sessions loaded:', res.data.length);",
+									"        console.log('First session ID saved:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"sessions"
+							]
+						},
+						"description": "Liste toutes les sessions actives (refresh tokens) de l'utilisateur.\n\n**Réponse:**\n```json\n{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"deviceName\": \"Chrome on Windows\",\n            \"ipAddress\": \"192.168.1.1\",\n            \"createdAt\": \"2025-12-10T10:00:00+00:00\",\n            \"lastUsedAt\": \"2025-12-10T14:30:00+00:00\"\n        }\n    ]\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke Specific Session",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/sessions/{{session_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"sessions",
+								"{{session_id}}"
+							]
+						},
+						"description": "Révoque une session spécifique par son ID.\n\nUtile pour déconnecter un appareil à distance."
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke All Sessions (Logout Everywhere)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"sessions"
+							]
+						},
+						"description": "Révoque TOUTES les sessions actives.\n\n**Attention:** Cela déconnecte l'utilisateur de TOUS ses appareils, y compris celui actuel."
+					},
+					"response": []
+				}
+			],
+			"description": "Gestion des sessions actives de l'utilisateur.\n\nPermet de:\n- Voir toutes les sessions actives\n- Révoquer des sessions spécifiques\n- Se déconnecter de tous les appareils"
+		},
+		{
+			"name": "Password Management",
+			"item": [
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"OldPassword123!\",\n    \"newPassword\": \"NewSecurePassword456!\",\n    \"logoutOtherDevices\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/change-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
+						},
+						"description": "Change le mot de passe de l'utilisateur connecté.\n\n**Paramètres:**\n- `currentPassword`: Mot de passe actuel (requis)\n- `newPassword`: Nouveau mot de passe (min 8 caractères)\n- `logoutOtherDevices`: Si true, révoque toutes les autres sessions\n\n**Validation:**\n- Le nouveau mot de passe doit être différent de l'actuel\n- Minimum 8 caractères"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						},
+						"description": "Retourne les informations de l'utilisateur connecté."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints pour la gestion du mot de passe."
+		},
+		{
+			"name": "Workspace",
+			"item": [
+				{
+					"name": "Workspace Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.id) {",
+									"        pm.collectionVariables.set('workspace_id', res.data.id);",
+									"        console.log('✅ Workspace created:', res.data.name, 'ID:', res.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mon Workspace\",\n    \"logo\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/workspace/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Workspace List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('workspace_id', res.data[0].id);",
+									"        console.log('✅ First workspace:', res.data[0].name, 'ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/workspace/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Workspace {id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/workspace/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Workspace Switch {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"workspaceId\": \"{{workspace_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/workspace/switch/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"switch",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Workspace {id} Invite",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/workspace/{id}/invite",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"{id}",
+								"invite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Workspace {id} Member {userId}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/workspace/{id}/member/{userId}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"{id}",
+								"member",
+								"{userId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Workspace {id}",
+					"request": {
+						"method": "PUT|PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/workspace/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"workspace",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Contact Search {contains}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/search/{contains}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"search",
+								"{contains}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('contact_id', res.data[0].id);",
+									"        console.log('✅ First contact:', res.data[0].firstName, res.data[0].lastName, 'ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/contact/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Info {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/info/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"info",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Import",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/import",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.contact && res.contact.id) {",
+									"        pm.collectionVariables.set('contact_id', res.contact.id);",
+									"        console.log('✅ Contact saved:', res.contact.firstName, res.contact.lastName, 'ID:', res.contact.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Jean\",\n    \"lastName\": \"Dupont\",\n    \"email\": \"jean.dupont@example.com\",\n    \"phone\": \"+33612345678\",\n    \"company\": \"{{company_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/contact/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Associate {id} {idCompany}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/associate/{id}/{idCompany}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"associate",
+								"{id}",
+								"{idCompany}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Unassociate {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/unassociate/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"unassociate",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Merge {sourceId} {targetId}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/merge/{sourceId}/{targetId}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"merge",
+								"{sourceId}",
+								"{targetId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact AddPhoto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/addPhoto",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"addPhoto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/contact/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"contact",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "Company List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('company_id', res.data[0].id);",
+									"        console.log('✅ First company:', res.data[0].name, 'ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 25\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/company/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company Search {contains}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company/search/{contains}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"search",
+								"{contains}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company Info {id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company/info/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"info",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company Import",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company/import",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"import"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.company && res.company.id) {",
+									"        pm.collectionVariables.set('company_id', res.company.id);",
+									"        console.log('✅ Company saved:', res.company.name, 'ID:', res.company.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Acme Corp\",\n    \"email\": \"contact@acme.com\",\n    \"phone\": \"+33123456789\",\n    \"website\": \"https://acme.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/company/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company AddPhoto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company/addPhoto",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"addPhoto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company Merge {sourceId} {targetId}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company/merge/{sourceId}/{targetId}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"merge",
+								"{sourceId}",
+								"{targetId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Company Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deal",
+			"item": [
+				{
+					"name": "Deal Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.deal && res.deal.id) {",
+									"        pm.collectionVariables.set('deal_id', res.deal.id);",
+									"        console.log('✅ Deal saved:', res.deal.title, 'ID:', res.deal.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Deal 50K€\",\n    \"value\": 50000,\n    \"currency\": \"EUR\",\n    \"contact\": \"{{contact_id}}\",\n    \"company\": \"{{company_id}}\",\n    \"pipeline\": \"{{pipeline_id}}\",\n    \"expectedCloseDate\": \"2025-12-31\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/deal/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Info {id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/info/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"info",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Change Step {id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/change/step/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"change",
+								"step",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Win {id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/win/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"win",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Lose {id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/lose/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"lose",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Unlose Unwin {id}",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/unlose/unwin/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"unlose",
+								"unwin",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Dissociate Contact {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/dissociate/contact/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"dissociate",
+								"contact",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Dissociate Company {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/dissociate/company/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"dissociate",
+								"company",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Remove Participant {dealId} {contactId}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/remove/participant/{dealId}/{contactId}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"remove",
+								"participant",
+								"{dealId}",
+								"{contactId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deal Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/deal/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"deal",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activity",
+			"item": [
+				{
+					"name": "Activity List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('activity_id', res.data[0].id);",
+									"        console.log('✅ First activity ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activity",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activity Calendar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity/calendar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activity",
+								"calendar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activity {id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activity",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activity Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.activity && res.activity.id) {",
+									"        pm.collectionVariables.set('activity_id', res.activity.id);",
+									"        console.log('✅ Activity saved:', res.activity.title, 'ID:', res.activity.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Appel de suivi\",\n    \"type\": \"call\",\n    \"contact\": \"{{contact_id}}\",\n    \"scheduledAt\": \"2025-12-15T14:00:00Z\",\n    \"duration\": 30\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/activity/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activity",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activity Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/activity/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activity",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pipeline",
+			"item": [
+				{
+					"name": "Pipeline List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('pipeline_id', res.data[0].id);",
+									"        console.log('✅ First pipeline:', res.data[0].name, 'ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.pipeline && res.pipeline.id) {",
+									"        pm.collectionVariables.set('pipeline_id', res.pipeline.id);",
+									"        console.log('✅ Pipeline saved:', res.pipeline.name, 'ID:', res.pipeline.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST|PUT",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Info {id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.pipeline && res.pipeline.steps && res.pipeline.steps.length > 0) {",
+									"        pm.collectionVariables.set('pipeline_step_id', res.pipeline.steps[0].id);",
+									"        console.log('✅ First pipeline step:', res.pipeline.steps[0].name, 'ID:', res.pipeline.steps[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/info/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"info",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Delete {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Step List",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/step/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"step",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Step List {pipelineId}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/step/list/{pipelineId}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"step",
+								"list",
+								"{pipelineId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Step Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.step && res.step.id) {",
+									"        pm.collectionVariables.set('pipeline_step_id', res.step.id);",
+									"        console.log('✅ Pipeline step saved:', res.step.name, 'ID:', res.step.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Qualification\",\n    \"pipeline\": \"{{pipeline_id}}\",\n    \"position\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/pipeline/step/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"step",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pipeline Step Delete {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pipeline/step/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pipeline",
+								"step",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tag",
+			"item": [
+				{
+					"name": "Tag List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('tag_id', res.data[0].id);",
+									"        console.log('✅ First tag:', res.data[0].name, 'ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tag/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tag",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tag Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.tag && res.tag.id) {",
+									"        pm.collectionVariables.set('tag_id', res.tag.id);",
+									"        console.log('✅ Tag created:', res.tag.name, 'ID:', res.tag.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"VIP\",\n    \"color\": \"#FF0000\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tag/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tag",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tag Assign",
+					"request": {
+						"method": "POST|PATCH",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tag/assign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tag",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Note",
+			"item": [
+				{
+					"name": "Note Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.note && res.note.id) {",
+									"        pm.collectionVariables.set('note_id', res.note.id);",
+									"        console.log('✅ Note saved ID:', res.note.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Note importante sur ce contact\",\n    \"entityType\": \"contact\",\n    \"entityId\": \"{{contact_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/note/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"note",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Note Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/note/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"note",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "File",
+			"item": [
+				{
+					"name": "File Uploader",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.file && res.file.id) {",
+									"        pm.collectionVariables.set('file_id', res.file.id);",
+									"        console.log('✅ File uploaded:', res.file.name, 'ID:', res.file.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/file/uploader",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"uploader"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0) {",
+									"        pm.collectionVariables.set('file_id', res.data[0].id);",
+									"        console.log('✅ First file ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/file/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.file && res.file.id) {",
+									"        pm.collectionVariables.set('file_id', res.file.id);",
+									"        console.log('✅ File uploaded:', res.file.name, 'ID:', res.file.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/file/upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File Config",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/file/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File Edit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/file/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "File Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/file/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"file",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mail",
+			"item": [
+				{
+					"name": "Mail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mail",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mail Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.mail && res.mail.id) {",
+									"        pm.collectionVariables.set('mail_id', res.mail.id);",
+									"        console.log('✅ Mail saved:', res.mail.email, 'ID:', res.mail.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mail/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mail",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mail Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/mail/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"mail",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Phone",
+			"item": [
+				{
+					"name": "Phone Number",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/phone/number",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phone",
+								"number"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Phone Number {id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/phone/number/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phone",
+								"number",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Phone Number Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.phoneNumber && res.phoneNumber.id) {",
+									"        pm.collectionVariables.set('phone_id', res.phoneNumber.id);",
+									"        console.log('✅ Phone saved:', res.phoneNumber.number, 'ID:', res.phoneNumber.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/phone/number/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phone",
+								"number",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Phone Number Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/phone/number/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"phone",
+								"number",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Property",
+			"item": [
+				{
+					"name": "Property List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/property/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"property",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.property && res.property.id) {",
+									"        pm.collectionVariables.set('property_id', res.property.id);",
+									"        console.log('✅ Property saved, ID:', res.property.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/property/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"property",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property Delete {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/property/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"property",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property Model List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/property/model/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"property",
+								"model",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property Model Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.propertyModel && res.propertyModel.id) {",
+									"        pm.collectionVariables.set('property_model_id', res.propertyModel.id);",
+									"        console.log('✅ Property Model saved, ID:', res.propertyModel.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/property/model/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"property",
+								"model",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property Model Delete {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/property/model/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"property",
+								"model",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Item",
+			"item": [
+				{
+					"name": "Item Type List",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/type/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"type",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Item Type {code}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/type/{code}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"type",
+								"{code}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Item Type Edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.itemType && res.itemType.id) {",
+									"        pm.collectionVariables.set('item_type_id', res.itemType.id);",
+									"        console.log('✅ Item Type saved:', res.itemType.code, 'ID:', res.itemType.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/type/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"type",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Item Type Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/item/type/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"item",
+								"type",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Import",
+			"item": [
+				{
+					"name": "Import Validation Contact File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/import/validation/contact/file",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"import",
+								"validation",
+								"contact",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Validation Company File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/import/validation/company/file",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"import",
+								"validation",
+								"company",
+								"file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Validation Contact Row",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/import/validation/contact/row",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"import",
+								"validation",
+								"contact",
+								"row"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Validation Company Row",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/import/validation/company/row",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"import",
+								"validation",
+								"company",
+								"row"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Validation Contact Duplicates",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/import/validation/contact/duplicates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"import",
+								"validation",
+								"contact",
+								"duplicates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Validation Company Duplicates",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/import/validation/company/duplicates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"import",
+								"validation",
+								"company",
+								"duplicates"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Export-full",
+			"item": [
+				{
+					"name": "Export Full",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/export-full",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"export-full"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Api",
+			"item": [
+				{
+					"name": "Api Plans List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const res = pm.response.json();",
+									"    if (res.data && res.data.length > 0 && res.data[0].id) {",
+									"        pm.collectionVariables.set('plan_id', res.data[0].id);",
+									"        console.log('✅ First plan:', res.data[0].name, 'ID:', res.data[0].id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/plans/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"plans",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Plans {code}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/plans/{code}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"plans",
+								"{code}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Plans Compare",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/plans/compare",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"plans",
+								"compare"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Current",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/current",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Subscribe",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const res = pm.response.json();",
+									"    if (res.subscription && res.subscription.id) {",
+									"        pm.collectionVariables.set('subscription_id', res.subscription.id);",
+									"        console.log('✅ Subscription created, ID:', res.subscription.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/subscribe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"subscribe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Change Plan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/change-plan",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"change-plan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Cancel",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Reactivate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/reactivate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"reactivate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Usage",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/usage",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"usage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Billing History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/billing-history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"billing-history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Payment Methods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/payment-methods",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"payment-methods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Payment Methods Add",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/payment-methods/add",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"payment-methods",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Api Subscription Payment Methods {paymentMethodId}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/payment-methods/{paymentMethodId}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"payment-methods",
+								"{paymentMethodId}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Webhooks",
+			"item": [
+				{
+					"name": "Webhooks Stripe",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/webhooks/stripe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhooks",
+								"stripe"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sync",
+			"item": [
+				{
+					"name": "Sync Contact Search",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/contact/search",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"contact",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Deal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/deal",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"deal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Deal {id} Tags",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/deal/{id}/tags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"deal",
+								"{id}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Deal {id} Step",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/deal/{id}/step",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"deal",
+								"{id}",
+								"step"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Deal {id} Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/deal/{id}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"deal",
+								"{id}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Contact {id} Tags",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/contact/{id}/tags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"contact",
+								"{id}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sync Fetch From Form",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sync/fetch-from-form",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sync",
+								"fetch-from-form"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "User List",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Info {id}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/info/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"info",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Edit {id}",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/edit/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"edit",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Change Password {id}",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/change-password/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"change-password",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Delete {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/delete/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"delete",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Profile Edit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Workspace-Id",
+								"value": "{{workspace_id}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/profile/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"profile",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script",
+					"if (!pm.collectionVariables.get(\"base_url\")) {",
+					"    pm.collectionVariables.set(\"base_url\", \"http://crm-api.test\");",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"if (pm.response.code >= 400) {",
+					"    console.error(\"❌ Error\", pm.response.code, \":\", pm.response.json());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://crm-api.test",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "workspace_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "contact_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "company_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "deal_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "activity_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pipeline_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "pipeline_step_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tag_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "note_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "file_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "file_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "mail_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "phone_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "property_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "property_model_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "item_type_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subscription_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "plan_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "otp_code",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "totp_secret",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "magic_link_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "oauth_state",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
